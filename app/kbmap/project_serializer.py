@@ -7,60 +7,51 @@ import json
 import re
 from pathlib import Path
 
-# 序列化字段顺序（影响语义权重，重要的在前）
-_FIELDS_ORDER = [
-    "立项年份", "技术领域", "项目名称", "项目编号",
-    "承担单位", "项目负责人",
-    "主要研究内容", "预期成果指标", "实际产出成果",
-]
+def serialize_project(d: dict) -> str:
+    """把（已清洗的）项目 dict 序列化成自然语言文本。
 
-
-def serialize_project(obj: dict) -> str:
-    """把单个项目 dict 序列化成自然语言描述，跳过空字段。
-
-    例：「2019年立项的【桥梁工程】类项目《大跨径...》（编号 JT2019YB15），
-    由广东省公路建设有限公司承担，项目负责人熊锋。主要研究内容：…」
+    头部一句散文（技术领域打头），随后主要研究内容/关键技术问题/成果分句。
+    字段值原样输出（不做改写/概括，保证确定性）；空字段与弃用字段不出现。
+    成果需先经 clean_project 清洗，本函数只负责排版。
     """
-    year = obj.get("立项年份", "")
-    field_obj = obj.get("技术领域", "")
-    name = obj.get("项目名称", "")
-    number = obj.get("项目编号", "")
-    org = obj.get("承担单位", "")
-    leader = obj.get("项目负责人", "")
+    def g(key: str) -> str:
+        return (d.get(key) or "").strip()
 
-    parts: list[str] = []
-    # 头部：年份 + 领域 + 项目名 + 编号
-    head = ""
+    tech, name = g("技术领域"), g("项目名称")
+    number, category = g("项目编号"), g("业务类别")
+    year, org, leader = g("立项年份"), g("承担单位"), g("项目负责人")
+    content = g("主要研究内容")
+    problem = g("拟解决的关键技术问题")
+    achievements = g("实际产出成果")
+
+    sentences: list[str] = []
+
+    # 头部：[技术领域]领域的科研项目《项目名称》（编号 X，业务类别），年份立项，由X承担，项目负责人X。
+    head_left = f"{tech}领域的科研项目" if tech else ("科研项目" if name else "")
+    name_part = f"《{name}》" if name else ""
+    paren_inner = "，".join(p for p in [f"编号 {number}" if number else "", category] if p)
+    paren = f"（{paren_inner}）" if paren_inner else ""
+    core = (head_left + name_part + paren).strip()
+    head_bits: list[str] = []
+    if core:
+        head_bits.append(core)
     if year:
-        head += f"{year}年立项的"
-    if field_obj:
-        head += f"【{field_obj}】类项目"
-    if name:
-        head += f"《{name}》"
-    if number:
-        head += f"（编号 {number}）"
-    if head:
-        parts.append(head)
-
+        head_bits.append(f"{year}年立项")
     if org:
-        parts.append(f"由{org}承担")
+        head_bits.append(f"由{org}承担")
     if leader:
-        parts.append(f"项目负责人{leader}")
+        head_bits.append(f"项目负责人{leader}")
+    if head_bits:
+        sentences.append("，".join(head_bits) + "。")
 
-    # 正文：其余字段按顺序拼「字段名：值」
-    body_fields = [f for f in _FIELDS_ORDER if f not in
-                   ("立项年份", "技术领域", "项目名称", "项目编号", "承担单位", "项目负责人")]
-    body_parts = []
-    for f in body_fields:
-        v = obj.get(f)
-        if v and str(v).strip():
-            body_parts.append(f"{f}：{v}")
-    if parts:
-        head_text = "，".join(parts) + "。"
-    else:
-        head_text = ""
-    body_text = "；".join(body_parts)
-    return (head_text + body_text).strip()
+    if content:
+        sentences.append(f"主要研究内容：{content}。")
+    if problem:
+        sentences.append(f"拟解决的关键技术问题：{problem}。")
+    if achievements:
+        sentences.append(f"已产出成果：{achievements}。")
+
+    return "".join(sentences)
 
 
 def iter_jsonl_chunks(path: Path) -> list[str]:

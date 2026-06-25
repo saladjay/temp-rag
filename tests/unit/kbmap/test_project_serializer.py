@@ -133,3 +133,41 @@ def test_clean_project_does_not_mutate_input():
     original = dict(d)
     clean_project(d)
     assert d == original  # 原 dict 不被修改
+
+
+def test_serialize_project_excludes_contact_and_budget_fields():
+    obj = {
+        "技术领域": "桥梁工程", "项目名称": "某项目", "项目编号": "JT0001",
+        "立项年份": "2019", "承担单位": "某公司", "项目负责人": "张三",
+        "项目负责人电话": "13900000000", "项目负责人电子邮箱": "secret@example.com",
+        "项目预算总经费": "99999", "项目总决算": "88888",
+    }
+    s = serialize_project(obj)
+    # 联系/经费字段不进入序列化文本
+    assert "13900000000" not in s
+    assert "secret@example.com" not in s
+    assert "99999" not in s
+    assert "88888" not in s
+    # 主题字段在
+    assert "桥梁工程" in s and "某项目" in s and "张三" in s
+
+
+def test_serialize_project_head_is_prose_with_category_in_parens():
+    obj = {"技术领域": "桥梁工程", "项目名称": "缆索研究", "项目编号": "JT1",
+           "业务类别": "重点科技项目", "立项年份": "2019",
+           "承担单位": "某公司", "项目负责人": "熊锋"}
+    s = serialize_project(obj)
+    assert s.startswith("桥梁工程领域的科研项目《缆索研究》（编号 JT1，重点科技项目）")
+    assert "2019年立项" in s
+    assert "由某公司承担" in s
+    assert "项目负责人熊锋" in s
+    assert s.endswith("。")
+
+
+def test_clean_then_serialize_full_pipeline():
+    d = {"技术领域": "桥梁工程", "项目名称": "X", "项目编号": "JT1", "立项年份": "2019",
+         "承担单位": "某公司", "项目负责人": "张三",
+         "实际产出成果": "成果类型：专利，成果名称：A ；成果类型：专利，成果名称：A ；成果类型：论文，成果名称：B ；"}
+    s = serialize_project(clean_project(d))
+    assert "已产出成果：A；B。" in s          # 去重+全留+句末句号
+    assert "成果类型" not in s and "成果名称" not in s
