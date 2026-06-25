@@ -139,3 +139,43 @@ def parse_projects(raw_text: str) -> list[dict]:
         if d:
             projects.append(d)
     return projects
+
+
+_ACHIEVEMENT_NAME_RE = re.compile(r"成果名称：([^；]+)")
+
+
+def _clean_achievements(value: str) -> str:
+    """剥 '成果类型：X，成果名称：' 套话 → 取名称 → 去重（保序）→ 全留，；连接。
+    无套话模式时返回去空白后的原文（不丢数据）。"""
+    if not value:
+        return ""
+    names = _ACHIEVEMENT_NAME_RE.findall(value)
+    if not names:
+        return value.strip()
+    seen: set[str] = set()
+    unique: list[str] = []
+    for n in names:
+        n = n.strip()
+        if n and n not in seen:
+            seen.add(n)
+            unique.append(n)
+    return "；".join(unique)
+
+
+def _clean_garbage(value: str) -> str:
+    """清 (项)/(本)/(篇) 等单位标记与 \\t,; 计数噪声，折叠空白。"""
+    if not value:
+        return ""
+    s = re.sub(r"\([^)]*\)", " ", value)   # 去 (项)(本)(篇)
+    s = re.sub(r"[\t,;]+", " ", s)          # 去制表/逗号/分号噪声
+    s = re.sub(r"\s+", " ", s).strip()
+    return s
+
+
+def clean_project(d: dict) -> dict:
+    """清洗：实际产出成果（剥套话+去重全留）、预期成果指标（清垃圾）。
+    返回新 dict，不改入参。"""
+    out = dict(d)
+    out["实际产出成果"] = _clean_achievements(d.get("实际产出成果", ""))
+    out["预期成果指标"] = _clean_garbage(d.get("预期成果指标", ""))
+    return out

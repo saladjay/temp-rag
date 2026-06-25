@@ -99,3 +99,37 @@ def test_parse_projects_decodes_json_escapes():
     mc = parse_projects(raw)[0]["主要研究内容"]
     assert "\n" in mc and "\t" in mc     # 真实换行/制表
     assert "\\n" not in mc                # 不是字面 backslash-n
+
+
+from app.kbmap.project_serializer import clean_project
+
+
+def test_clean_project_strips_achievement_boilerplate_and_dedupes():
+    d = {"实际产出成果":
+         "成果类型：专利，成果名称：自锁式行走轮 ；"
+         "成果类型：专利，成果名称：自锁式行走轮 ；"   # 重复
+         "成果类型：论文，成果名称：除湿微机控制系统 ；"}
+    out = clean_project(d)
+    assert out["实际产出成果"] == "自锁式行走轮；除湿微机控制系统"  # 剥套话+去重+；连接
+    assert "成果类型" not in out["实际产出成果"]
+    assert "成果名称" not in out["实际产出成果"]
+
+
+def test_clean_project_preserves_non_boilerplate_achievements():
+    # 无 成果名称： 套话模式时，原样返回去空白文本（不丢数据）
+    d = {"实际产出成果": "  自由文本成果描述  "}
+    assert clean_project(d)["实际产出成果"] == "自由文本成果描述"
+
+
+def test_clean_project_cleans_garbage_in_expected_indicator():
+    d = {"预期成果指标": "1项专利授权发明专利(项)\t\t,;\n9篇形成研究报告数(篇)\t\t,;"}
+    out = clean_project(d)["预期成果指标"]
+    assert "(项)" not in out and "(篇)" not in out
+    assert "\t" not in out
+
+
+def test_clean_project_does_not_mutate_input():
+    d = {"实际产出成果": "成果类型：专利，成果名称：A ；"}
+    original = dict(d)
+    clean_project(d)
+    assert d == original  # 原 dict 不被修改
