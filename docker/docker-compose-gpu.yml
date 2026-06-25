@@ -20,7 +20,7 @@ services:
     command: minio server /minio_data
 
   milvus-standalone:
-    image: milvusdb/milvus:2.4.10-gpu-latest   # 规划阶段核对固定 tag
+    image: milvusdb/milvus:v2.4.10-gpu   # 已核对：固定 GPU tag（linux/amd64）
     command: ["milvus", "run", "standalone"]
     security_opt:
       - seccomp:unconfined

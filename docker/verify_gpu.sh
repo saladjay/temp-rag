@@ -10,7 +10,7 @@ if ! docker info 2>/dev/null | grep -q "Runtimes.*nvidia"; then
   echo "  https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html"
   exit 1
 fi
-docker run --rm --gpus all milvusdb/milvus:2.4.10-gpu-latest nvidia-smi >/dev/null 2>&1 \
+docker run --rm --gpus all milvusdb/milvus:v2.4.10-gpu nvidia-smi >/dev/null 2>&1 \
   && echo "容器内 GPU 可用" || echo "警告：容器内 GPU 不可用"
 
 echo "== Milvus 健康 =="
