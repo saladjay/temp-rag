@@ -6,6 +6,7 @@ def test_config_chunker_defaults():
     assert settings.chunker_backend == "structural"
     assert settings.chunk_target_max == 1500
     assert settings.chunk_target_min == 200
+    assert settings.chunk_whole_doc_max == 800
 
 
 def test_assign_segment_id_is_deterministic():
@@ -202,11 +203,11 @@ from app.ingest.chunker import chunk_document
 def test_chunk_document_full_pipeline_cleans_and_splits():
     raw = ("<!-- chunk_idx=0 chunk_id=aaa -->\n"
            "<图片内容|start><img src=\"https://x/hash.jpeg\"/><图片内容|end>\n"
-           "抬头说明文字。\n"
+           "抬头说明文字。" + "关于本文件的背景说明。" * 20 + "\n"
            "<!-- chunk_idx=1 chunk_id=bbb -->\n"
-           "一、总则\n本章节讲总体要求，内容比较丰富。\n"
+           "一、总则\n" + "本章节讲总体要求，需要详细阐述总体原则与适用范围。" * 15 + "\n"
            "<!-- chunk_idx=2 chunk_id=ccc -->\n"
-           "二、附则\n第二条的具体规定。")
+           "二、附则\n" + "第二条的具体规定以及相关补充说明内容。" * 15)
     chunks = chunk_document("doc1", "测试.doc", "kb_policy_national", raw)
     assert len(chunks) >= 2
     # 无噪声
@@ -262,8 +263,8 @@ def test_source_chunk_ids_correct_despite_leading_whitespace():
     """heading 前有空行/缩进时，final chunk 的 source_chunk_ids 仍正确追溯。"""
     from app.ingest.chunker import chunk_document
     # raw: chunk0 = 抬头（含尾部空行），chunk1 = 缩进的标题+正文
-    raw = ("<!-- chunk_idx=0 chunk_id=abc0 -->\n抬头。\n\n"
-           "<!-- chunk_idx=1 chunk_id=def1 -->\n  一、章节\n正文内容。")
+    raw = ("<!-- chunk_idx=0 chunk_id=abc0 -->\n抬头。" + "背景说明文字。" * 70 + "\n\n"
+           "<!-- chunk_idx=1 chunk_id=def1 -->\n  一、章节\n" + "正文内容详细描述。" * 70)
     chunks = chunk_document("docS", "s.doc", "kb_regulation", raw)
     # 找到含"一、章节"的 chunk，其 source_chunk_ids 必须含 def1（不能因偏移漏掉或错配）
     heading_chunk = next(c for c in chunks if c.heading and "章节" in c.heading)
@@ -271,3 +272,20 @@ def test_source_chunk_ids_correct_despite_leading_whitespace():
     # 抬头 chunk 的 source_chunk_ids 含 abc0
     preamble = next(c for c in chunks if "抬头" in c.text)
     assert "abc0" in preamble.source_chunk_ids
+
+
+def test_chunk_document_short_doc_returns_whole_single_chunk():
+    # 清洗后整篇 ≤ chunk_whole_doc_max → 整篇作一个 chunk，跳过结构切分
+    raw = "<!-- chunk_idx=0 chunk_id=abc0 -->\n这是一篇很短的通知，讲一件小事，无需切分。"
+    chunks = chunk_document("docShort", "通知.doc", "kb_policy_national", raw)
+    assert len(chunks) == 1
+    assert "很短的通知" in chunks[0].text
+    assert chunks[0].ordinal == 0
+    assert chunks[0].source_chunk_ids == ["abc0"]
+
+
+def test_chunk_document_long_doc_still_structurally_split():
+    # 清洗后整篇 > chunk_whole_doc_max → 仍按结构切（不被整篇化）
+    raw = "<!-- chunk_idx=0 chunk_id=abc0 -->\n" + ("一、章节\n内容内容内容。\n" * 120)
+    chunks = chunk_document("docLong", "长.doc", "kb_policy_national", raw)
+    assert len(chunks) > 1  # 远超 800，按"一、章节"边界切

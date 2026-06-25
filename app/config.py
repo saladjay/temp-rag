@@ -123,6 +123,7 @@ class Settings(BaseSettings):
     # 结构感知切块护栏
     chunk_target_max: int = 1500
     chunk_target_min: int = 200
+    chunk_whole_doc_max: int = 800   # 清洗后整篇 ≤ 此值则不切分，整篇作一个 chunk
 
     # ========== 生成 / 重写 / 稳定性 ==========
     gen_temperature: float = 0.0

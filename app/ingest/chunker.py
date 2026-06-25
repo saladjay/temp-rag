@@ -262,6 +262,14 @@ def chunk_document(doc_id: str, doc_name: str, kb: str, raw_text: str) -> list[C
     full, intervals = reconstruct(raw_chunks)
     if not full:
         return []
+    # 短文档整篇化：清洗后整篇 ≤ chunk_whole_doc_max 时，整篇作一个 chunk，
+    # 跳过结构切分（短文切碎反而损 embedding 信号 + 上下文）。
+    if len(full) <= settings.chunk_whole_doc_max:
+        return [Chunk(
+            segment_id=assign_segment_id(doc_id, 0, full),
+            text=full, doc_id=doc_id, doc_name=doc_name, kb=kb,
+            heading=None, source_chunk_ids=[iv.chunk_id for iv in intervals], ordinal=0,
+        )]
     sections = split_by_structure(full)
     sections = apply_size_guardrails(
         sections, settings.chunk_target_max, settings.chunk_target_min
