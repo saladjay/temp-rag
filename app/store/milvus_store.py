@@ -57,7 +57,9 @@ class MilvusStore:
                 ))
         # 确定排序：score DESC → pk ASC；稳定排序保证同分顺序确定
         collected.sort(key=lambda h: (-h.score, h.pk))
-        return collected[:top_k]
+        # 每个 KB 已由上面 limit=top_k 限定；合并后不再全局截断，
+        # 最终 top_n 由 rerank 节点负责（避免强 KB 挤占弱 KB 的召回）。
+        return collected
 
     def ensure_collection(self, kb_name: str, dim: int) -> None:
         from pymilvus import DataType

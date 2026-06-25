@@ -28,14 +28,16 @@ class FakeClient:
     def search(self, collection_name, data, anns_field, param, limit, output_fields, **kw):
         self.searched.append((collection_name, param, limit))
         # 构造两行同分但 pk 不同的命中，验证二级排序
-        return [[
+        rows = [
             {"id": 2, "distance": 0.9, "entity": {"text": "b", "doc_id": "d2",
               "doc_name": "n2", "segment_id": "d2#0001", "source": "kb_a"}},
             {"id": 1, "distance": 0.9, "entity": {"text": "a", "doc_id": "d1",
               "doc_name": "n1", "segment_id": "d1#0000", "source": "kb_a"}},
             {"id": 3, "distance": 0.5, "entity": {"text": "c", "doc_id": "d3",
               "doc_name": "n3", "segment_id": "d3#0002", "source": "kb_a"}},
-        ]]
+        ]
+        # 真实 Milvus 会按 limit 截断；fake 在此对齐
+        return [rows[:limit]]
 
 
 def test_search_tiebreak_score_desc_then_pk_asc():
@@ -46,10 +48,17 @@ def test_search_tiebreak_score_desc_then_pk_asc():
     assert [h.score for h in hits] == [0.9, 0.9, 0.5]
 
 
-def test_search_top_k_truncation():
+def test_search_respects_per_kb_limit():
     store = MilvusStore(client=FakeClient())
     hits = store.search([0.1]*1024, ["kb_a"], top_k=2, ef=64)
     assert len(hits) == 2
+
+
+def test_search_multi_kb_not_globally_truncated():
+    """多库检索：合并后不全局截断，2 库 × top_k=2 → 4 条。"""
+    store = MilvusStore(client=FakeClient())
+    hits = store.search([0.1]*1024, ["kb_a", "kb_b"], top_k=2, ef=64)
+    assert len(hits) == 4
 
 
 def test_uses_fixed_ef_param():
