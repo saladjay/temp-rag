@@ -1,7 +1,7 @@
 """FastAPI 路由：/chat(SSE)、/sessions、/health。"""
 from __future__ import annotations
 import json
-from fastapi import APIRouter
+from fastapi import APIRouter, UploadFile, File, Form
 from sse_starlette.sse import EventSourceResponse
 
 from app.api.schemas import ChatRequest
@@ -74,6 +74,29 @@ async def clear_session(session_id: str):
     """清空指定会话历史。"""
     await SessionStore().clear(session_id)
     return {"ok": True}
+
+
+@router.post("/ingest")
+async def ingest(kb: str = Form(...), file: UploadFile = File(...)):
+    """入库端点：multipart 表单接收 kb + file，调用入库流水线。
+
+    将上传文件写入临时文件，懒加载入库组件并执行 run_ingest，
+    finally 确保临时文件清理；返回 {kb, chunks}。
+    """
+    from app.ingest.pipeline import _make_components, run_ingest
+    import tempfile
+    import pathlib
+
+    parser, chunker, embedder, writer = _make_components()
+    suffix = pathlib.Path(file.filename).suffix
+    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+        tmp.write(await file.read())
+        path = tmp.name
+    try:
+        n = run_ingest(kb, path, parser, chunker, embedder, writer)
+    finally:
+        pathlib.Path(path).unlink(missing_ok=True)
+    return {"kb": kb, "chunks": n}
 
 
 @health_router.get("/health")
