@@ -24,10 +24,11 @@ def run_ingest(kb_name: str, file_path: str, parser, chunker, embedder, writer) 
 def _make_components():
     from app.ingest.chunker import StructuralChunker
     from app.ingest.embedder import CloudEmbedder
-    from app.ingest.parser import MinerUParser
+    from app.ingest.parser import LocalTextParser, MinerUParser
     from app.ingest.writer import MilvusWriter
     chunker = StructuralChunker()
-    return MinerUParser(), chunker, CloudEmbedder(), MilvusWriter()
+    parser = LocalTextParser() if settings.parser_backend == "local" else MinerUParser()
+    return parser, chunker, CloudEmbedder(), MilvusWriter()
 
 
 def cli():

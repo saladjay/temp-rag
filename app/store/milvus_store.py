@@ -44,7 +44,7 @@ class MilvusStore:
                 collection_name=name,
                 data=[query_vector],
                 anns_field="embedding",
-                param={"metric_type": settings.milvus_metric, "params": {"ef": ef}},
+                search_params={"metric_type": settings.milvus_metric, "params": {"ef": ef}},
                 limit=top_k,
                 output_fields=["text", "doc_id", "doc_name", "segment_id", "source"],
             )
@@ -77,10 +77,17 @@ class MilvusStore:
         schema.add_field("source", DataType.VARCHAR, max_length=64)
         schema.add_field("embedding_model", DataType.VARCHAR, max_length=128)
         client.create_collection(collection_name=full, schema=schema)
-        client.create_index(collection_name=full, field_name="embedding",
-                            index_type="HNSW", metric_type=settings.milvus_metric,
-                            params={"M": settings.milvus_hnsw_m,
-                                    "efConstruction": settings.milvus_ef_construction})
+        # MilvusClient 建索引需 IndexParams 对象（2.4+ 起 index_type/metric_type/params
+        # 不再作为 create_index 的 kwargs，老 orm Collection 写法对 MilvusClient 无效）。
+        index_params = client.prepare_index_params()
+        index_params.add_index(
+            field_name="embedding",
+            index_type="HNSW",
+            metric_type=settings.milvus_metric,
+            params={"M": settings.milvus_hnsw_m,
+                    "efConstruction": settings.milvus_ef_construction},
+        )
+        client.create_index(collection_name=full, index_params=index_params)
         client.load_collection(full)
         logger.info("milvus_collection_created", name=full, dim=dim)
 

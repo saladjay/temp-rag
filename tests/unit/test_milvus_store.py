@@ -25,8 +25,8 @@ class FakeClient:
         return S()
     def load_collection(self, name):
         pass
-    def search(self, collection_name, data, anns_field, param, limit, output_fields, **kw):
-        self.searched.append((collection_name, param, limit))
+    def search(self, collection_name, data, anns_field, search_params, limit, output_fields, **kw):
+        self.searched.append((collection_name, search_params, limit))
         # 构造两行同分但 pk 不同的命中，验证二级排序
         rows = [
             {"id": 2, "distance": 0.9, "entity": {"text": "b", "doc_id": "d2",
