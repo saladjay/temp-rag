@@ -98,6 +98,43 @@ class Settings(BaseSettings):
     search_max_top_k: int = 100
     search_rerank_enabled: bool = True
 
+    # ========== Milvus (本地 GPU) ==========
+    milvus_host: str = "localhost"
+    milvus_port: int = 19530
+    milvus_db: str = "default"
+    milvus_collection_prefix: str = "kb_"
+    milvus_metric: str = "COSINE"
+    milvus_top_k_per_kb: int = 10
+    milvus_ef: int = 128
+    milvus_hnsw_m: int = 16
+    milvus_ef_construction: int = 200
+
+    # ========== Redis (会话 + 缓存) ==========
+    redis_url: str = "redis://localhost:6379/0"
+
+    # ========== 入库（模型可插拔） ==========
+    parser_backend: str = "mineru"        # mineru | local
+    chunker_backend: str = "fixed"        # fixed | recursive
+    embedding_backend: str = "cloud"      # cloud (bge-m3)
+    chunk_size: int = 500
+    chunk_overlap: int = 80
+    chunk_tolerance: int = 50
+
+    # ========== 生成 / 重写 / 稳定性 ==========
+    gen_temperature: float = 0.0
+    gen_top_p: float = 1.0
+    gen_max_tokens: int = 1024
+    gen_top_n_context: int = 5
+    gen_context_char_per_seg: int = 800
+    gen_context_total_chars: int = 4000
+    gen_history_turns: int = 3
+    rewrite_temperature: float = 0.0
+    session_history_messages: int = 6
+    session_ttl: int = 86400
+    stability_cache_enabled: bool = True
+    stability_cache_ttl: int = 604800
+    stability_semantic_threshold: float = 0.98
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
