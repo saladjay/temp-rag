@@ -1,0 +1,836 @@
+version: 1
+embedding_model: bge-m3
+kb_defines:
+  kb_policy_national:
+    description: 国家/部委/省的政策、规划、讲话
+  kb_ops:
+    description: 信息平台操作指引、常见问题、功能说明
+  kb_regulation:
+    description: 科研管理制度、办法、通知
+  kb_template:
+    description: 申报表单模板
+  kb_project:
+    description: 集团历史科研项目（jsonl，一项目一 chunk）
+    chunker: jsonl
+    serializer: project_natural_language
+  kb_policy_group:
+    description: 集团内部规划、办法
+files:
+- path: 0352fdaa55824280927f6632a62ffeb4_政策文件/“十四五”交通领域科技创新规划.doc.md
+  kb: kb_policy_national
+  doc_name: “十四五”交通领域科技创新规划.doc
+  duplicates:
+  - 20229f58c5b44100b40117558668e45c_政策二/“十四五”交通领域科技创新规划.doc.md
+- path: 0352fdaa55824280927f6632a62ffeb4_政策文件/中共中央 国务院印发《交通强国建设纲要》_最新政策_中国政府网.pdf.md
+  kb: kb_policy_national
+  doc_name: 中共中央 国务院印发《交通强国建设纲要》_最新政策_中国政府网.pdf
+  duplicates:
+  - 20229f58c5b44100b40117558668e45c_政策二/中共中央 国务院印发《交通强国建设纲要》_最新政策_中国政府网.pdf.md
+- path: 0352fdaa55824280927f6632a62ffeb4_政策文件/交通运输部关于加快交通运输公共数据资源开发利用的实施意见_国务院部门文件_中国政府网.pdf.md
+  kb: kb_policy_national
+  doc_name: 交通运输部关于加快交通运输公共数据资源开发利用的实施意见_国务院部门文件_中国政府网.pdf
+  duplicates:
+  - 20229f58c5b44100b40117558668e45c_政策二/交通运输部关于加快交通运输公共数据资源开发利用的实施意见_国务院部门文件_中国政府网.pdf.md
+- path: 0352fdaa55824280927f6632a62ffeb4_政策文件/交通运输部关于推进公路数字化转型加快智慧公路建设发展的意见-政府信息公开-交通运输部.pdf.md
+  kb: kb_policy_national
+  doc_name: 交通运输部关于推进公路数字化转型加快智慧公路建设发展的意见-政府信息公开-交通运输部.pdf
+  duplicates:
+  - 20229f58c5b44100b40117558668e45c_政策二/交通运输部关于推进公路数字化转型加快智慧公路建设发展的意见-政府信息公开-交通运输部.pdf.md
+- path: 0352fdaa55824280927f6632a62ffeb4_政策文件/交通运输领域新型基础设施建设行动方案（2021—2025 年）.pdf.md
+  kb: kb_policy_national
+  doc_name: 交通运输领域新型基础设施建设行动方案（2021—2025 年）.pdf
+  duplicates:
+  - 20229f58c5b44100b40117558668e45c_政策二/交通运输领域新型基础设施建设行动方案（2021—2025 年）.pdf.md
+- path: 0352fdaa55824280927f6632a62ffeb4_政策文件/关于印发集团2026年度人工智能、无人机应用与低空经济_1.pdf.md
+  kb: kb_policy_group
+  doc_name: 关于印发集团2026年度人工智能、无人机应用与低空经济_1.pdf
+  duplicates:
+  - 20229f58c5b44100b40117558668e45c_政策二/关于印发集团2026年度人工智能、无人机应用与低空经济_1.pdf.md
+- path: 0352fdaa55824280927f6632a62ffeb4_政策文件/国务院关于深入实施“人工智能”行动的意见-2025年第25号国务院公报.pdf.md
+  kb: kb_policy_national
+  doc_name: 国务院关于深入实施“人工智能”行动的意见-2025年第25号国务院公报.pdf
+  duplicates:
+  - 20229f58c5b44100b40117558668e45c_政策二/国务院关于深入实施“人工智能”行动的意见-2025年第25号国务院公报.pdf.md
+- path: 0352fdaa55824280927f6632a62ffeb4_政策文件/广东省交通运输厅关于印发《广东省交通运输科技协同创新“.pdf.md
+  kb: kb_policy_national
+  doc_name: 广东省交通运输厅关于印发《广东省交通运输科技协同创新“.pdf
+  duplicates:
+  - 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/广东省交通运输厅关于印发《广东省交通运输科技协同创新“.pdf.md
+- path: 0352fdaa55824280927f6632a62ffeb4_政策文件/广东省人民政府办公厅关于印发广东省交通运输高质量发展三.pdf.md
+  kb: kb_policy_national
+  doc_name: 广东省人民政府办公厅关于印发广东省交通运输高质量发展三.pdf
+  duplicates:
+  - 20229f58c5b44100b40117558668e45c_政策二/广东省人民政府办公厅关于印发广东省交通运输高质量发展三_1.pdf.md
+- path: 0352fdaa55824280927f6632a62ffeb4_政策文件/广东省人民政府办公厅关于印发广东省人工智能赋能交通运输.pdf.md
+  kb: kb_policy_national
+  doc_name: 广东省人民政府办公厅关于印发广东省人工智能赋能交通运输.pdf
+  duplicates:
+  - 20229f58c5b44100b40117558668e45c_政策二/广东省人民政府办公厅关于印发广东省人工智能赋能交通运输_1.pdf.md
+- path: 0352fdaa55824280927f6632a62ffeb4_政策文件/广东省科技创新“十四五”规划.pdf.md
+  kb: kb_policy_national
+  doc_name: 广东省科技创新“十四五”规划.pdf
+  duplicates:
+  - 20229f58c5b44100b40117558668e45c_政策二/广东省科技创新“十四五”规划.pdf.md
+- path: 0352fdaa55824280927f6632a62ffeb4_政策文件/广东省综合交通运输体系“十四五”发展规划.pdf.md
+  kb: kb_policy_national
+  doc_name: 广东省综合交通运输体系“十四五”发展规划.pdf
+  duplicates:
+  - 20229f58c5b44100b40117558668e45c_政策二/广东省综合交通运输体系“十四五”发展规划.pdf.md
+- path: 0352fdaa55824280927f6632a62ffeb4_政策文件/数字交通“十四五”发展规划.pdf.md
+  kb: kb_policy_national
+  doc_name: 数字交通“十四五”发展规划.pdf
+  duplicates:
+  - 20229f58c5b44100b40117558668e45c_政策二/数字交通“十四五”发展规划.pdf.md
+  - 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/数字交通“十四五”发展规划.pdf.md
+  - d2161f11208946e59aa0e124ab8dc257_集团规划/数字交通“十四五”发展规划.pdf.md
+- path: 0352fdaa55824280927f6632a62ffeb4_政策文件/粤交集基[2022]404号：关于印发《广东省交通集团科技创新“十四五”发展纲要》的通知.pdf.md
+  kb: kb_policy_group
+  doc_name: 粤交集基[2022]404号：关于印发《广东省交通集团科技创新“十四五”发展纲要》的通知.pdf
+  duplicates:
+  - 20229f58c5b44100b40117558668e45c_政策二/粤交集基[2022]404号：关于印发《广东省交通集团科技创新“十四五”发展纲要》的通知.pdf.md
+  - d2161f11208946e59aa0e124ab8dc257_集团规划/粤交集基[2022]404号：关于印发《广东省交通集团科技创新“十四五”发展纲要》的通知.pdf.md
+- path: 0352fdaa55824280927f6632a62ffeb4_政策文件/粤交集基〔2025〕285号：关于印发集团公路交通基础设施数字化转型升级科研选题指引的通知.pdf.md
+  kb: kb_policy_group
+  doc_name: 粤交集基〔2025〕285号：关于印发集团公路交通基础设施数字化转型升级科研选题指引的通知.pdf
+  duplicates:
+  - 20229f58c5b44100b40117558668e45c_政策二/粤交集基〔2025〕285号：关于印发集团公路交通基础设施数字化转型升级科研选题指引的通知.pdf.md
+- path: 09690a19332d4cd68c28d9b44eb96f6f_操作指引_常见问题/2.操作指引、常见问题_index.md.md
+  kb: kb_ops
+  doc_name: 2.操作指引、常见问题_index.md
+  duplicates: []
+- path: 09690a19332d4cd68c28d9b44eb96f6f_操作指引_常见问题/广东省交通科技协同创新信息平台常见问题解答（一）.pdf.md
+  kb: kb_ops
+  doc_name: 广东省交通科技协同创新信息平台常见问题解答（一）.pdf
+  duplicates: []
+- path: 09690a19332d4cd68c28d9b44eb96f6f_操作指引_常见问题/广东省交通科技协同创新信息平台常见问题解答（二）.docx.md
+  kb: kb_ops
+  doc_name: 广东省交通科技协同创新信息平台常见问题解答（二）.docx
+  duplicates: []
+- path: 09690a19332d4cd68c28d9b44eb96f6f_操作指引_常见问题/广东省交通科技协同创新信息平台常见问题解答（二）.pdf.md
+  kb: kb_ops
+  doc_name: 广东省交通科技协同创新信息平台常见问题解答（二）.pdf
+  duplicates: []
+- path: 09690a19332d4cd68c28d9b44eb96f6f_操作指引_常见问题/广东省交通科技协同创新信息平台集团科技项目申报省行业重点科技清单项目指引.docx.md
+  kb: kb_ops
+  doc_name: 广东省交通科技协同创新信息平台集团科技项目申报省行业重点科技清单项目指引.docx
+  duplicates: []
+- path: 09690a19332d4cd68c28d9b44eb96f6f_操作指引_常见问题/广东省交通科技协同创新信息平台集团科技项目立项申报操作指引.pdf.md
+  kb: kb_ops
+  doc_name: 广东省交通科技协同创新信息平台集团科技项目立项申报操作指引.pdf
+  duplicates: []
+- path: 09690a19332d4cd68c28d9b44eb96f6f_操作指引_常见问题/附件1：信息平台操作常见问题（汇总）.docx.md
+  kb: kb_ops
+  doc_name: 附件1：信息平台操作常见问题（汇总）.docx
+  duplicates: []
+- path: 09690a19332d4cd68c28d9b44eb96f6f_操作指引_常见问题/附件1：集团科技协调创新信息平台操作常见问题（汇总）.xlsx.md
+  kb: kb_ops
+  doc_name: 附件1：集团科技协调创新信息平台操作常见问题（汇总）.xlsx
+  duplicates: []
+- path: 09690a19332d4cd68c28d9b44eb96f6f_操作指引_常见问题/（未整完）广东省交通科技协同创新信息平台集团科技项目立项申报操作指引.docx.md
+  kb: kb_ops
+  doc_name: （未整完）广东省交通科技协同创新信息平台集团科技项目立项申报操作指引.docx
+  duplicates: []
+- path: 1aa4823513ea407e93a5af1594122da0_集团历史项目-v2/项目自定义导出数据 (基础)-v3.xlsx.md
+  kb: kb_project
+  doc_name: 项目自定义导出数据 (基础)-v3.xlsx
+  duplicates: []
+- path: 60e0f7bac363446d9ba7b594f7bb9c2e_科小星-操作文档/广东省交通科技协同创新信息平台集团科技管理操作培训_常见问题.pdf.md
+  kb: kb_ops
+  doc_name: 广东省交通科技协同创新信息平台集团科技管理操作培训_常见问题.pdf
+  duplicates: []
+- path: 60e0f7bac363446d9ba7b594f7bb9c2e_科小星-操作文档/广东省交通科技协同创新信息平台集团科技管理操作培训_平台介绍.pdf.md
+  kb: kb_ops
+  doc_name: 广东省交通科技协同创新信息平台集团科技管理操作培训_平台介绍.pdf
+  duplicates: []
+- path: 60e0f7bac363446d9ba7b594f7bb9c2e_科小星-操作文档/广东省交通科技协同创新信息平台集团科技管理操作培训_系统角色及功能介绍.pdf.md
+  kb: kb_ops
+  doc_name: 广东省交通科技协同创新信息平台集团科技管理操作培训_系统角色及功能介绍.pdf
+  duplicates: []
+- path: 60e0f7bac363446d9ba7b594f7bb9c2e_科小星-操作文档/广东省交通科技协同创新信息平台集团科技管理操作培训_集团科技管理业务流程及操作介绍.pdf.md
+  kb: kb_ops
+  doc_name: 广东省交通科技协同创新信息平台集团科技管理操作培训_集团科技管理业务流程及操作介绍.pdf
+  duplicates: []
+- path: 60e0f7bac363446d9ba7b594f7bb9c2e_科小星-操作文档/广东省交通科技协同创新信息平台集团科技管理操作详解及常见问题解答.pdf.md
+  kb: kb_ops
+  doc_name: 广东省交通科技协同创新信息平台集团科技管理操作详解及常见问题解答.pdf
+  duplicates: []
+- path: 60e0f7bac363446d9ba7b594f7bb9c2e_科小星-操作文档/广东省交通运输行业基建科技项目管理操作指引（交通集团体系内）.pdf.md
+  kb: kb_ops
+  doc_name: 广东省交通运输行业基建科技项目管理操作指引（交通集团体系内）.pdf
+  duplicates: []
+- path: 60e0f7bac363446d9ba7b594f7bb9c2e_科小星-操作文档/附件1：信息平台操作常见问题2.pdf.md
+  kb: kb_ops
+  doc_name: 附件1：信息平台操作常见问题2.pdf
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2000-01-09_印发《关于加速实施技术创新工程形成.md.md
+  kb: kb_policy_national
+  doc_name: 2000-01-09_印发《关于加速实施技术创新工程形成.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2007-03-29_关于印发全国交通运输系统法制宣传教.md.md
+  kb: kb_policy_national
+  doc_name: 2007-03-29_关于印发全国交通运输系统法制宣传教.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2011-04-18_关于印发公路水路交通运输“十二五”.md.md
+  kb: kb_policy_national
+  doc_name: 2011-04-18_关于印发公路水路交通运输“十二五”.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2011-04-18_转发关于印发公路水路交通运输“十二.md.md
+  kb: kb_policy_national
+  doc_name: 2011-04-18_转发关于印发公路水路交通运输“十二.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2011-06-27_转发广东省职业技术教育改革发展规划.md.md
+  kb: kb_policy_national
+  doc_name: 2011-06-27_转发广东省职业技术教育改革发展规划.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2011-07-01_印发广东省职业技术教育改革发展规划.md.md
+  kb: kb_policy_national
+  doc_name: 2011-07-01_印发广东省职业技术教育改革发展规划.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2013-01-29_交通运输部关于印发全国航道职工教育.md.md
+  kb: kb_policy_national
+  doc_name: 2013-01-29_交通运输部关于印发全国航道职工教育.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2014-11-06_广东省人民政府办公厅关于印发推进珠.md.md
+  kb: kb_policy_national
+  doc_name: 2014-11-06_广东省人民政府办公厅关于印发推进珠.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2014-12-23_陕西省人民政府办公厅关于印发全面提.md.md
+  kb: kb_policy_national
+  doc_name: 2014-12-23_陕西省人民政府办公厅关于印发全面提.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2015-07-23_广东省人民政府关于印发《广东省智能.md.md
+  kb: kb_policy_national
+  doc_name: 2015-07-23_广东省人民政府关于印发《广东省智能.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2015-08-31_国务院关于印发促进大数据发展行动纲.md.md
+  kb: kb_policy_national
+  doc_name: 2015-08-31_国务院关于印发促进大数据发展行动纲.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2015-10-10_广东省人民政府关于印发广东省深入实施知识产权战略推动_200000159.md.md
+  kb: kb_policy_national
+  doc_name: 2015-10-10_广东省人民政府关于印发广东省深入实施知识产权战略推动_200000159.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2015-10-11_国务院关于第一批取消62项 中央指.md.md
+  kb: kb_policy_national
+  doc_name: 2015-10-11_国务院关于第一批取消62项 中央指.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2016-01-30_交通运输标准化“十三五”发展规划（.md.md
+  kb: kb_policy_national
+  doc_name: 2016-01-30_交通运输标准化“十三五”发展规划（.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2016-02-26_中华人民共和国促进科技成果转化法（2015年修订）_200000114.md.md
+  kb: kb_policy_national
+  doc_name: 2016-02-26_中华人民共和国促进科技成果转化法（2015年修订）_200000114.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2016-02-26_关于印发《国有科技型企业股权和分红.md.md
+  kb: kb_policy_national
+  doc_name: 2016-02-26_关于印发《国有科技型企业股权和分红.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2016-02-26_国务院关于印发实施《中华人民共和国促进科技成果转化》_200000115.md.md
+  kb: kb_policy_national
+  doc_name: 2016-02-26_国务院关于印发实施《中华人民共和国促进科技成果转化》_200000115.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2016-03-16_交通运输科技“十三五”发展规划（交.md.md
+  kb: kb_policy_national
+  doc_name: 2016-03-16_交通运输科技“十三五”发展规划（交.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2016-03-20_中共中央印发《关于深化人才发展体制机制改革的意见》（_200000103.md.md
+  kb: kb_policy_national
+  doc_name: 2016-03-20_中共中央印发《关于深化人才发展体制机制改革的意见》（_200000103.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2016-04-19_交通运输信息化“十三五”发展规划（.md.md
+  kb: kb_policy_national
+  doc_name: 2016-04-19_交通运输信息化“十三五”发展规划（.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2016-04-21_国务院办公厅关于印发促进科技成果转移转化行动方案的通_200000116.md.md
+  kb: kb_policy_national
+  doc_name: 2016-04-21_国务院办公厅关于印发促进科技成果转移转化行动方案的通_200000116.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2016-04-22_广东省人民政府办公厅关于印发广东省促进大数据发展行动_200000170.md.md
+  kb: kb_policy_national
+  doc_name: 2016-04-22_广东省人民政府办公厅关于印发广东省促进大数据发展行动_200000170.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2016-05-05_中国科协贯彻落实《关于深化人才发展体制机制改革的意见_200000104.md.md
+  kb: kb_policy_national
+  doc_name: 2016-05-05_中国科协贯彻落实《关于深化人才发展体制机制改革的意见_200000104.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2016-07-28_国务院关于印发“十三五”国家科技创新规划的通知（国发_200000044.md.md
+  kb: kb_policy_national
+  doc_name: 2016-07-28_国务院关于印发“十三五”国家科技创新规划的通知（国发_200000044.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2016-08-03_教育部 科技部关于加强高等学校科技.md.md
+  kb: kb_policy_national
+  doc_name: 2016-08-03_教育部 科技部关于加强高等学校科技.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2016-08-24_中国科学院、科学技术部关于印发《中国科学院关于新时期_200000120.md.md
+  kb: kb_policy_national
+  doc_name: 2016-08-24_中国科学院、科学技术部关于印发《中国科学院关于新时期_200000120.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2016-10-12_关于加强卫生与健康科技成果转移转化工作的指导意见（国_200000121.md.md
+  kb: kb_policy_national
+  doc_name: 2016-10-12_关于加强卫生与健康科技成果转移转化工作的指导意见（国_200000121.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2016-10-13_教育部办公厅关于印发《促进高等学校科技成果转移转化行_200000119.md.md
+  kb: kb_policy_national
+  doc_name: 2016-10-13_教育部办公厅关于印发《促进高等学校科技成果转移转化行_200000119.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2016-11-07_交通运输部关于印发交通运输青年科技.md.md
+  kb: kb_policy_national
+  doc_name: 2016-11-07_交通运输部关于印发交通运输青年科技.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2016-11-08_广东省人民政府办公厅关于进一步促进科技成果转移转化的_200000176.md.md
+  kb: kb_policy_national
+  doc_name: 2016-11-08_广东省人民政府办公厅关于进一步促进科技成果转移转化的_200000176.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2016-11-15_广东省交通运输科技“十三五”发展规.md.md
+  kb: kb_policy_national
+  doc_name: 2016-11-15_广东省交通运输科技“十三五”发展规.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2016-11-15_广东省人民政府关于印发《广东省系统推进全面创新改革试_200000177.md.md
+  kb: kb_policy_national
+  doc_name: 2016-11-15_广东省人民政府关于印发《广东省系统推进全面创新改革试_200000177.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2016-11-30_中国科学院促进科技成果转移转化专项行动实施方案（科发_200000117.md.md
+  kb: kb_policy_national
+  doc_name: 2016-11-30_中国科学院促进科技成果转移转化专项行动实施方案（科发_200000117.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2017-02-03_国务院关于印发“十三五”现代综合交通运输体系发展规划_200000045.md.md
+  kb: kb_policy_national
+  doc_name: 2017-02-03_国务院关于印发“十三五”现代综合交通运输体系发展规划_200000045.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2017-03-10_人力资源社会保障部关于支持和鼓励事业单位专业技术人员_200000110.md.md
+  kb: kb_policy_national
+  doc_name: 2017-03-10_人力资源社会保障部关于支持和鼓励事业单位专业技术人员_200000110.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2017-04-27_交通运输部促进科技成果转化暂行办法.md.md
+  kb: kb_policy_national
+  doc_name: 2017-04-27_交通运输部促进科技成果转化暂行办法.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2017-06-01_“十三五”交通领域科技创新专项规划.md.md
+  kb: kb_policy_national
+  doc_name: 2017-06-01_“十三五”交通领域科技创新专项规划.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2017-08-17_广东省人民政府办公厅印发广东省战略性新兴产业发展“十_200000180.md.md
+  kb: kb_policy_national
+  doc_name: 2017-08-17_广东省人民政府办公厅印发广东省战略性新兴产业发展“十_200000180.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2017-11-24_《广东省交通运输科技项目结题工作规.md.md
+  kb: kb_policy_national
+  doc_name: 2017-11-24_《广东省交通运输科技项目结题工作规.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2018-01-31_关于印发《省出资监管企业实施创新驱.md.md
+  kb: kb_policy_national
+  doc_name: 2018-01-31_关于印发《省出资监管企业实施创新驱.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2018-02-26_中共中央办公厅 国务院办公厅印发《.md.md
+  kb: kb_policy_national
+  doc_name: 2018-02-26_中共中央办公厅 国务院办公厅印发《.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2018-02-26_中共中央办公厅 国务院办公厅印发《_1.md.md
+  kb: kb_policy_national
+  doc_name: 2018-02-26_中共中央办公厅 国务院办公厅印发《_1.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2018-04-23_广东省交通运输厅关于征集2018年.md.md
+  kb: kb_policy_national
+  doc_name: 2018-04-23_广东省交通运输厅关于征集2018年.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2018-07-03_中共中央办公厅 国务院办公厅印发《.md.md
+  kb: kb_policy_national
+  doc_name: 2018-07-03_中共中央办公厅 国务院办公厅印发《.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2018-07-20_广东省科学技术厅中共广东省委农村工.md.md
+  kb: kb_policy_national
+  doc_name: 2018-07-20_广东省科学技术厅中共广东省委农村工.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2018-09-26_关于发展数字经济稳定并扩大就业的指.md.md
+  kb: kb_policy_national
+  doc_name: 2018-09-26_关于发展数字经济稳定并扩大就业的指.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2018-11-12_山东省国资委山东省科技厅印发《关于.md.md
+  kb: kb_policy_national
+  doc_name: 2018-11-12_山东省国资委山东省科技厅印发《关于.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2018-12-28_关于进一步完善中央财政科技和教育资.md.md
+  kb: kb_policy_national
+  doc_name: 2018-12-28_关于进一步完善中央财政科技和教育资.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2019-01-03_国务院办公厅关于抓好赋予科研机构和.md.md
+  kb: kb_policy_national
+  doc_name: 2019-01-03_国务院办公厅关于抓好赋予科研机构和.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2019-02-18_中共中央国务院印发《粤港澳大湾区发展规划纲要》_200000047.md.md
+  kb: kb_policy_national
+  doc_name: 2019-02-18_中共中央国务院印发《粤港澳大湾区发展规划纲要》_200000047.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2019-05-14_国家发展改革委 科技部关于构建市场.md.md
+  kb: kb_policy_national
+  doc_name: 2019-05-14_国家发展改革委 科技部关于构建市场.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2019-06-11_中共中央办公厅 国务院办公厅印发《.md.md
+  kb: kb_policy_national
+  doc_name: 2019-06-11_中共中央办公厅 国务院办公厅印发《.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2019-07-03_广东省科学技术厅关于印发《广东省技.md.md
+  kb: kb_policy_national
+  doc_name: 2019-07-03_广东省科学技术厅关于印发《广东省技.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2019-08-19_人力资源社会保障部关于改革完善技能.md.md
+  kb: kb_policy_national
+  doc_name: 2019-08-19_人力资源社会保障部关于改革完善技能.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2019-09-19_中共中央、国务院印发《交通强国建设纲要》_200000046.md.md
+  kb: kb_policy_national
+  doc_name: 2019-09-19_中共中央、国务院印发《交通强国建设纲要》_200000046.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2019-12-25_中共中央办公厅 国务院办公厅 印发.md.md
+  kb: kb_policy_national
+  doc_name: 2019-12-25_中共中央办公厅 国务院办公厅 印发.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2019-12-27_《百户科技型企业深化市场化改革提升.md.md
+  kb: kb_policy_national
+  doc_name: 2019-12-27_《百户科技型企业深化市场化改革提升.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2020-02-03_国家税务总局广东省税务局关于印发网.md.md
+  kb: kb_policy_national
+  doc_name: 2020-02-03_国家税务总局广东省税务局关于印发网.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2020-03-03_中共中央办公厅 国务院办公厅印发《.md.md
+  kb: kb_policy_national
+  doc_name: 2020-03-03_中共中央办公厅 国务院办公厅印发《.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2020-03-04_关于有效应对新冠肺炎疫情影响切实加.md.md
+  kb: kb_policy_national
+  doc_name: 2020-03-04_关于有效应对新冠肺炎疫情影响切实加.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2020-03-20_国务院办公厅关于应对新冠肺炎疫情影.md.md
+  kb: kb_policy_national
+  doc_name: 2020-03-20_国务院办公厅关于应对新冠肺炎疫情影.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2020-03-21_科技部印发《关于科技创新支撑复工复.md.md
+  kb: kb_policy_national
+  doc_name: 2020-03-21_科技部印发《关于科技创新支撑复工复.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2020-03-27_国务院办公厅关于支持国家级新区深化.md.md
+  kb: kb_policy_national
+  doc_name: 2020-03-27_国务院办公厅关于支持国家级新区深化.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2020-03-30_中共中央 国务院关于构建更加完善的.md.md
+  kb: kb_policy_national
+  doc_name: 2020-03-30_中共中央 国务院关于构建更加完善的.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2020-04-08_广东省科学技术厅关于印发《关于在常.md.md
+  kb: kb_policy_national
+  doc_name: 2020-04-08_广东省科学技术厅关于印发《关于在常.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2020-05-05_国务院办公厅关于对2019年落实 .md.md
+  kb: kb_policy_national
+  doc_name: 2020-05-05_国务院办公厅关于对2019年落实 .md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2020-05-06_广东省科学技术厅关于印发《广东省科.md.md
+  kb: kb_policy_national
+  doc_name: 2020-05-06_广东省科学技术厅关于印发《广东省科.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2020-05-18_浙江省国资委 浙江省科技厅 关于推.md.md
+  kb: kb_policy_national
+  doc_name: 2020-05-18_浙江省国资委 浙江省科技厅 关于推.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2020-05-27_科技部等六部门发布鼓励科研项目开发.md.md
+  kb: kb_policy_national
+  doc_name: 2020-05-27_科技部等六部门发布鼓励科研项目开发.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2020-07-13_国务院关于促进国家高新技术产业开发.md.md
+  kb: kb_policy_national
+  doc_name: 2020-07-13_国务院关于促进国家高新技术产业开发.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2020-07-23_国务院办公厅关于 提升大众创业万众.md.md
+  kb: kb_policy_national
+  doc_name: 2020-07-23_国务院办公厅关于 提升大众创业万众.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2020-09-11_科学技术研究档案管理规定_1531893699854864384.md.md
+  kb: kb_policy_national
+  doc_name: 2020-09-11_科学技术研究档案管理规定_1531893699854864384.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2020-09-21_关于加快推进国有企业数字化转型工作.md.md
+  kb: kb_policy_national
+  doc_name: 2020-09-21_关于加快推进国有企业数字化转型工作.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2020-10-11_中共中央办公厅 国务院办公厅印发《.md.md
+  kb: kb_policy_national
+  doc_name: 2020-10-11_中共中央办公厅 国务院办公厅印发《.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2020-11-07_人力资源社会保障部办公厅关于支持企.md.md
+  kb: kb_policy_national
+  doc_name: 2020-11-07_人力资源社会保障部办公厅关于支持企.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2020-12-13_关于加快构建全国一体化大数据中心协.md.md
+  kb: kb_policy_national
+  doc_name: 2020-12-13_关于加快构建全国一体化大数据中心协.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2021-01-07_人力资源社会保障部关于进一步加强高.md.md
+  kb: kb_policy_national
+  doc_name: 2021-01-07_人力资源社会保障部关于进一步加强高.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2021-01-16_关于印发《关于深入推进企业研发费用.md.md
+  kb: kb_policy_national
+  doc_name: 2021-01-16_关于印发《关于深入推进企业研发费用.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2021-01-22_《广东省科研诚信管理办法》（试行）.md.md
+  kb: kb_policy_national
+  doc_name: 2021-01-22_《广东省科研诚信管理办法》（试行）.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2021-02-24_中共中央 国务院印发《国家综合立体.md.md
+  kb: kb_policy_national
+  doc_name: 2021-02-24_中共中央 国务院印发《国家综合立体.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2021-03-03_两部门联合印发《国家技术创新中心建.md.md
+  kb: kb_policy_national
+  doc_name: 2021-03-03_两部门联合印发《国家技术创新中心建.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2021-03-16_交通运输部办公厅关于加快推广应用道.md.md
+  kb: kb_policy_national
+  doc_name: 2021-03-16_交通运输部办公厅关于加快推广应用道.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2021-03-24_关于印发《广东省科学技术厅关于广东.md.md
+  kb: kb_policy_national
+  doc_name: 2021-03-24_关于印发《广东省科学技术厅关于广东.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2021-04-25_《广东省国民经济和社会发展第十四个.md.md
+  kb: kb_policy_national
+  doc_name: 2021-04-25_《广东省国民经济和社会发展第十四个.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2021-06-17_科技部等十三部门印发《关于支持女性.md.md
+  kb: kb_policy_national
+  doc_name: 2021-06-17_科技部等十三部门印发《关于支持女性.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2021-07-01_国家发展改革委关于印发“十四五”循.md.md
+  kb: kb_policy_national
+  doc_name: 2021-07-01_国家发展改革委关于印发“十四五”循.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2021-08-20_广东省交通运输厅关于印发《广东省交.md.md
+  kb: kb_policy_national
+  doc_name: 2021-08-20_广东省交通运输厅关于印发《广东省交.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2021-08-25_交通运输部 科学技术部关于科技创新.md.md
+  kb: kb_policy_national
+  doc_name: 2021-08-25_交通运输部 科学技术部关于科技创新.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2021-09-01_《广东省综合交通运输体系“十四五”.md.md
+  kb: kb_policy_national
+  doc_name: 2021-09-01_《广东省综合交通运输体系“十四五”.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2021-09-04_广东省人民政府办公厅关于印发《广东.md.md
+  kb: kb_policy_national
+  doc_name: 2021-09-04_广东省人民政府办公厅关于印发《广东.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2021-09-21_《广东省科技创新“十四五”规划》_1503376318786572288.md.md
+  kb: kb_policy_national
+  doc_name: 2021-09-21_《广东省科技创新“十四五”规划》_1503376318786572288.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2021-09-22_广东省科技创新 “十四五”规划_1503311570397171712.md.md
+  kb: kb_policy_national
+  doc_name: 2021-09-22_广东省科技创新 “十四五”规划_1503311570397171712.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2021-09-28_广东省市场监督管理局关于印发《广东.md.md
+  kb: kb_policy_national
+  doc_name: 2021-09-28_广东省市场监督管理局关于印发《广东.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2021-10-23_广东省人民政府关于印发广东省科技创.md.md
+  kb: kb_policy_national
+  doc_name: 2021-10-23_广东省人民政府关于印发广东省科技创.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2021-10-28_国务院关于印发“十四五”国家知识产.md.md
+  kb: kb_policy_national
+  doc_name: 2021-10-28_国务院关于印发“十四五”国家知识产.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2021-11-15_多部关于印发《交通运输标准化“十四.md.md
+  kb: kb_policy_national
+  doc_name: 2021-11-15_多部关于印发《交通运输标准化“十四.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2021-11-15_工业和信息化部关于印发“十四五”大.md.md
+  kb: kb_policy_national
+  doc_name: 2021-11-15_工业和信息化部关于印发“十四五”大.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2021-11-15_工业和信息化部关于印发“十四五”软.md.md
+  kb: kb_policy_national
+  doc_name: 2021-11-15_工业和信息化部关于印发“十四五”软.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2021-11-17_工业和信息化部关于印发“十四五”信.md.md
+  kb: kb_policy_national
+  doc_name: 2021-11-17_工业和信息化部关于印发“十四五”信.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2021-12-09_国务院关于印发“十四五”现代综合交.md.md
+  kb: kb_policy_national
+  doc_name: 2021-12-09_国务院关于印发“十四五”现代综合交.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2021-12-11_关于印发“十四五”促进中小企业发展.md.md
+  kb: kb_policy_national
+  doc_name: 2021-12-11_关于印发“十四五”促进中小企业发展.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2021-12-14_国家铁路局关于印发《“十四五”铁路.md.md
+  kb: kb_policy_national
+  doc_name: 2021-12-14_国家铁路局关于印发《“十四五”铁路.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2021-12-21_三部委关于印发“十四五”原材料工业.md.md
+  kb: kb_policy_national
+  doc_name: 2021-12-21_三部委关于印发“十四五”原材料工业.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2021-12-21_八部门关于印发《“十四五”智能制造.md.md
+  kb: kb_policy_national
+  doc_name: 2021-12-21_八部门关于印发《“十四五”智能制造.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2021-12-21_十五部门关于印发《“十四五”机器人.md.md
+  kb: kb_policy_national
+  doc_name: 2021-12-21_十五部门关于印发《“十四五”机器人.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2021-12-27_十四五”国家信息化规划_1485805178954321920.md.md
+  kb: kb_policy_national
+  doc_name: 2021-12-27_十四五”国家信息化规划_1485805178954321920.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2021-12-29_广东省交通运输厅关于印发《广东省普.md.md
+  kb: kb_policy_national
+  doc_name: 2021-12-29_广东省交通运输厅关于印发《广东省普.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2021-12-30_关于印发《贵州省“十四五”交通运输.md.md
+  kb: kb_policy_national
+  doc_name: 2021-12-30_关于印发《贵州省“十四五”交通运输.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2021-12-31_广东省交通运输厅关于印发《广东省农.md.md
+  kb: kb_policy_national
+  doc_name: 2021-12-31_广东省交通运输厅关于印发《广东省农.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2022-01-01_《广东省综合立体交通网规划纲要》_1483350327024553984.md.md
+  kb: kb_policy_national
+  doc_name: 2022-01-01_《广东省综合立体交通网规划纲要》_1483350327024553984.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2022-01-07_关于印发《贵州省“十四五”交通运输.md.md
+  kb: kb_policy_national
+  doc_name: 2022-01-07_关于印发《贵州省“十四五”交通运输.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2022-01-24_关于印发广西交通运输科技创新“十四.md.md
+  kb: kb_policy_national
+  doc_name: 2022-01-24_关于印发广西交通运输科技创新“十四.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2022-01-24_关于印发广西交通运输科技创新“十四_1.md.md
+  kb: kb_policy_national
+  doc_name: 2022-01-24_关于印发广西交通运输科技创新“十四_1.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2022-01-28_自然资源部办公厅关于印发《节地技术.md.md
+  kb: kb_policy_national
+  doc_name: 2022-01-28_自然资源部办公厅关于印发《节地技术.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2022-01-29_公路“十四五”发展规划_1503259942671486976.md.md
+  kb: kb_policy_national
+  doc_name: 2022-01-29_公路“十四五”发展规划_1503259942671486976.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2022-01-29_现代综合交通枢纽体系“十四五”发展.md.md
+  kb: kb_policy_national
+  doc_name: 2022-01-29_现代综合交通枢纽体系“十四五”发展.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2022-02-16_《惠州市综合交通运输“十四五”发展.md.md
+  kb: kb_policy_national
+  doc_name: 2022-02-16_《惠州市综合交通运输“十四五”发展.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2022-02-23_《深圳市综合交通“十四五”规划》 .md.md
+  kb: kb_policy_national
+  doc_name: 2022-02-23_《深圳市综合交通“十四五”规划》 .md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2022-02-28_公共交通企业信息公开规定_1503919765767458816.md.md
+  kb: kb_policy_national
+  doc_name: 2022-02-28_公共交通企业信息公开规定_1503919765767458816.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2022-02-28_关于印发《公路安全设施和交通秩序管.md.md
+  kb: kb_policy_national
+  doc_name: 2022-02-28_关于印发《公路安全设施和交通秩序管.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2022-03-04_多省印发交通运输科技创新“十四五”.md.md
+  kb: kb_policy_national
+  doc_name: 2022-03-04_多省印发交通运输科技创新“十四五”.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2022-03-10_交通运输部 科学技术部关于印发《“.md.md
+  kb: kb_policy_national
+  doc_name: 2022-03-10_交通运输部 科学技术部关于印发《“.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2022-03-17_交通运输部关于印发《交通强国建设评.md.md
+  kb: kb_policy_national
+  doc_name: 2022-03-17_交通运输部关于印发《交通强国建设评.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2022-03-20_中办国办印发《关于加强科技伦理治理.md.md
+  kb: kb_policy_national
+  doc_name: 2022-03-20_中办国办印发《关于加强科技伦理治理.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2022-03-20_中办国办印发《关于加强科技伦理治理_1.md.md
+  kb: kb_policy_national
+  doc_name: 2022-03-20_中办国办印发《关于加强科技伦理治理_1.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2022-03-22_关于进一步做好当前道路客运及城市交.md.md
+  kb: kb_policy_national
+  doc_name: 2022-03-22_关于进一步做好当前道路客运及城市交.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2022-03-25_交通运输部 科学技术部关于印发《交.md.md
+  kb: kb_policy_national
+  doc_name: 2022-03-25_交通运输部 科学技术部关于印发《交.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2022-04-07_交通运输部办公厅关于强化道路旅客运.md.md
+  kb: kb_policy_national
+  doc_name: 2022-04-07_交通运输部办公厅关于强化道路旅客运.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2022-04-08_“十四五”交通领域科技创新规划_1513716844513595392.md.md
+  kb: kb_policy_national
+  doc_name: 2022-04-08_“十四五”交通领域科技创新规划_1513716844513595392.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2022-04-12_交通运输部办公厅关于强化城市公共交.md.md
+  kb: kb_policy_national
+  doc_name: 2022-04-12_交通运输部办公厅关于强化城市公共交.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2022-04-24_交通运输部办公厅关于开展2022年.md.md
+  kb: kb_policy_national
+  doc_name: 2022-04-24_交通运输部办公厅关于开展2022年.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2022-04-26_关于印发 《“十四五”公路养护管理.md.md
+  kb: kb_policy_national
+  doc_name: 2022-04-26_关于印发 《“十四五”公路养护管理.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2022-04-29_交通运输部办公厅关于做好《公路水运.md.md
+  kb: kb_policy_national
+  doc_name: 2022-04-29_交通运输部办公厅关于做好《公路水运.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2022-05-24_关于印发《交通运输部促进科技成果转.md.md
+  kb: kb_policy_national
+  doc_name: 2022-05-24_关于印发《交通运输部促进科技成果转.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2022-06-08_交通运输部关于进一步加强普通公路勘.md.md
+  kb: kb_policy_national
+  doc_name: 2022-06-08_交通运输部关于进一步加强普通公路勘.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2022-06-08_广东省交通运输厅关于加强交通基础设.md.md
+  kb: kb_policy_national
+  doc_name: 2022-06-08_广东省交通运输厅关于加强交通基础设.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2022-07-12_国家发展改革委 交通运输部关于印发.md.md
+  kb: kb_policy_national
+  doc_name: 2022-07-12_国家发展改革委 交通运输部关于印发.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2022-07-16_国务院办公厅关于完善科技成果评价机.md.md
+  kb: kb_policy_national
+  doc_name: 2022-07-16_国务院办公厅关于完善科技成果评价机.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2022-08-15_科技部 财政部关于印发《企业技术创.md.md
+  kb: kb_policy_national
+  doc_name: 2022-08-15_科技部 财政部关于印发《企业技术创.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/2022-08-18_科技部等九部门关于印发《科技支撑碳.md.md
+  kb: kb_policy_national
+  doc_name: 2022-08-18_科技部等九部门关于印发《科技支撑碳.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/“十四五”交通领域科技创新规划.pdf.md
+  kb: kb_policy_national
+  doc_name: “十四五”交通领域科技创新规划.pdf
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/创新人才类_index.md.md
+  kb: kb_policy_national
+  doc_name: 创新人才类_index.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/创新平台类_index.md.md
+  kb: kb_policy_national
+  doc_name: 创新平台类_index.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/成果转化类_index.md.md
+  kb: kb_policy_national
+  doc_name: 成果转化类_index.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/数字交通“十四五”发展规划.docx.md
+  kb: kb_policy_national
+  doc_name: 数字交通“十四五”发展规划.docx
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/粤交集基[2022]404号：关于印发《广东省交通集团科技创新“十四五”发展纲要》的通知.docx.md
+  kb: kb_policy_group
+  doc_name: 粤交集基[2022]404号：关于印发《广东省交通集团科技创新“十四五”发展纲要》的通知.docx
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/规划计划_index.md.md
+  kb: kb_policy_national
+  doc_name: 规划计划_index.md
+  duplicates: []
+- path: 9e2bb1b888a5413e8ef6b3b7563cfed4_规划政策文件/高速公路收费_index.md.md
+  kb: kb_policy_national
+  doc_name: 高速公路收费_index.md
+  duplicates: []
+- path: 9ee6c2e017f5431ea0f1a63a3a95d93f_科研管理制度/1.科研管理制度_index.md.md
+  kb: kb_regulation
+  doc_name: 1.科研管理制度_index.md
+  duplicates: []
+- path: 9ee6c2e017f5431ea0f1a63a3a95d93f_科研管理制度/关于进一步加强落实科技管理工作的通知.docx.md
+  kb: kb_regulation
+  doc_name: 关于进一步加强落实科技管理工作的通知.docx
+  duplicates: []
+- path: 9ee6c2e017f5431ea0f1a63a3a95d93f_科研管理制度/关于进一步加强落实科技管理工作的通知.pdf.md
+  kb: kb_regulation
+  doc_name: 关于进一步加强落实科技管理工作的通知.pdf
+  duplicates: []
+- path: 9ee6c2e017f5431ea0f1a63a3a95d93f_科研管理制度/广东省交通集团有限公司会计核算办法研发支出核算工作规程.docx.md
+  kb: kb_regulation
+  doc_name: 广东省交通集团有限公司会计核算办法研发支出核算工作规程.docx
+  duplicates: []
+- path: 9ee6c2e017f5431ea0f1a63a3a95d93f_科研管理制度/广东省交通集团有限公司会计核算办法研发支出核算工作规程.pdf.md
+  kb: kb_regulation
+  doc_name: 广东省交通集团有限公司会计核算办法研发支出核算工作规程.pdf
+  duplicates: []
+- path: 9ee6c2e017f5431ea0f1a63a3a95d93f_科研管理制度/广东省交通集团有限公司研发投入归集与操作指引.docx.md
+  kb: kb_regulation
+  doc_name: 广东省交通集团有限公司研发投入归集与操作指引.docx
+  duplicates: []
+- path: 9ee6c2e017f5431ea0f1a63a3a95d93f_科研管理制度/广东省交通集团有限公司研发投入归集与操作指引.pdf.md
+  kb: kb_regulation
+  doc_name: 广东省交通集团有限公司研发投入归集与操作指引.pdf
+  duplicates: []
+- path: 9ee6c2e017f5431ea0f1a63a3a95d93f_科研管理制度/广东省交通集团科技项目“揭榜挂帅”工作指引.docx.md
+  kb: kb_regulation
+  doc_name: 广东省交通集团科技项目“揭榜挂帅”工作指引.docx
+  duplicates: []
+- path: 9ee6c2e017f5431ea0f1a63a3a95d93f_科研管理制度/广东省交通集团科技项目变更工作指引（征求意见稿）.docx.md
+  kb: kb_regulation
+  doc_name: 广东省交通集团科技项目变更工作指引（征求意见稿）.docx
+  duplicates: []
+- path: 9ee6c2e017f5431ea0f1a63a3a95d93f_科研管理制度/粤交集基[2022]304号：关于印发广东省交通集团.docx.md
+  kb: kb_regulation
+  doc_name: 粤交集基[2022]304号：关于印发广东省交通集团.docx
+  duplicates: []
+- path: 9ee6c2e017f5431ea0f1a63a3a95d93f_科研管理制度/粤交集基〔2024〕121号：关于印发《广东省交通集.docx.md
+  kb: kb_regulation
+  doc_name: 粤交集基〔2024〕121号：关于印发《广东省交通集.docx
+  duplicates: []
+- path: 9ee6c2e017f5431ea0f1a63a3a95d93f_科研管理制度/粤交集基〔2024〕121号：关于印发《广东省交通集团.pdf.md
+  kb: kb_regulation
+  doc_name: 粤交集基〔2024〕121号：关于印发《广东省交通集团.pdf
+  duplicates: []
+- path: d9a64056d09f44b1a60f0788413389ae_政策_会议_讲话汇编/政策、会议、讲话汇编（更新至5月15日）_index.md.md
+  kb: kb_policy_national
+  doc_name: 政策、会议、讲话汇编（更新至5月15日）_index.md
+  duplicates: []
+- path: d9a64056d09f44b1a60f0788413389ae_政策_会议_讲话汇编/附件1 国家、部委科技创新政策汇编（2020年-2025年5月）-分类.docx.md
+  kb: kb_policy_national
+  doc_name: 附件1 国家、部委科技创新政策汇编（2020年-2025年5月）-分类.docx
+  duplicates: []
+- path: d9a64056d09f44b1a60f0788413389ae_政策_会议_讲话汇编/附件2 习近平总书记关于科技创新重要论述摘编 - 2025.5.docx.md
+  kb: kb_policy_national
+  doc_name: 附件2 习近平总书记关于科技创新重要论述摘编 - 2025.5.docx
+  duplicates: []
+- path: d9a64056d09f44b1a60f0788413389ae_政策_会议_讲话汇编/附件3 “科技创新”相关会议重要论述汇编-2025.5.docx.md
+  kb: kb_policy_national
+  doc_name: 附件3 “科技创新”相关会议重要论述汇编-2025.5.docx
+  duplicates: []
+- path: d9a64056d09f44b1a60f0788413389ae_政策_会议_讲话汇编/附件3-1 涉及“科技创新”的重要会议讲话精神-2025.5.xlsx.md
+  kb: kb_policy_national
+  doc_name: 附件3-1 涉及“科技创新”的重要会议讲话精神-2025.5.xlsx
+  duplicates: []
+- path: d9a64056d09f44b1a60f0788413389ae_政策_会议_讲话汇编/集团研发中心--政策汇编-20250512.xlsx.md
+  kb: kb_policy_group
+  doc_name: 集团研发中心--政策汇编-20250512.xlsx
+  duplicates: []
+- path: e91245a61d0647b5a634150193a68237_模版/可行性研究报告-模版.docx.md
+  kb: kb_template
+  doc_name: 可行性研究报告-模版.docx
+  duplicates: []
+- path: e91245a61d0647b5a634150193a68237_模版/研究与试验发展经费预算表及测算说明-模版.docx.md
+  kb: kb_template
+  doc_name: 研究与试验发展经费预算表及测算说明-模版.docx
+  duplicates: []

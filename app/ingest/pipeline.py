@@ -11,7 +11,8 @@ logger = get_logger(__name__)
 
 def run_ingest(kb_name: str, file_path: str, parser, chunker, embedder, writer) -> int:
     text = parser.parse(file_path)
-    chunks = chunker.chunk(text, doc_id=Path(file_path).stem)
+    chunks = chunker.chunk(text, doc_id=Path(file_path).stem,
+                           doc_name=Path(file_path).stem, kb=kb_name)
     if not chunks:
         return 0
     vectors = embedder.embed([c.text for c in chunks])
@@ -21,11 +22,11 @@ def run_ingest(kb_name: str, file_path: str, parser, chunker, embedder, writer) 
 
 
 def _make_components():
-    from app.ingest.chunker import FixedChunker
+    from app.ingest.chunker import StructuralChunker
     from app.ingest.embedder import CloudEmbedder
     from app.ingest.parser import MinerUParser
     from app.ingest.writer import MilvusWriter
-    chunker = FixedChunker(settings.chunk_size, settings.chunk_overlap, settings.chunk_tolerance)
+    chunker = StructuralChunker()
     return MinerUParser(), chunker, CloudEmbedder(), MilvusWriter()
 
 
