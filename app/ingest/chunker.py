@@ -253,6 +253,12 @@ def _chunk_jsonl(doc_id: str, doc_name: str, kb: str, raw_text: str) -> list[Chu
     return chunks
 
 
+def _is_index_file(doc_name: str) -> bool:
+    """coreagent 导出的目录/索引文件（*_index.md）：内容是文档标题列表，
+    按结构标题切分会碎成空标题段，无检索意义 → 整篇作一个 section 交护栏。"""
+    return doc_name.lower().endswith("_index.md")
+
+
 def chunk_document(doc_id: str, doc_name: str, kb: str, raw_text: str) -> list[Chunk]:
     """主入口：根据 kb 选策略。kb_project 走 jsonl；其他走结构感知管线。"""
     if kb == "kb_project":
@@ -270,7 +276,9 @@ def chunk_document(doc_id: str, doc_name: str, kb: str, raw_text: str) -> list[C
             text=full, doc_id=doc_id, doc_name=doc_name, kb=kb,
             heading=None, source_chunk_ids=[iv.chunk_id for iv in intervals], ordinal=0,
         )]
-    sections = split_by_structure(full)
+    sections = ([Section(heading=None, text=full, start=0)]
+                if _is_index_file(doc_name)
+                else split_by_structure(full))
     sections = apply_size_guardrails(
         sections, settings.chunk_target_max, settings.chunk_target_min
     )

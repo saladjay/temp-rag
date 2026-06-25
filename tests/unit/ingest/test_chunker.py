@@ -289,3 +289,23 @@ def test_chunk_document_long_doc_still_structurally_split():
     raw = "<!-- chunk_idx=0 chunk_id=abc0 -->\n" + ("一、章节\n内容内容内容。\n" * 120)
     chunks = chunk_document("docLong", "长.doc", "kb_policy_national", raw)
     assert len(chunks) > 1  # 远超 800，按"一、章节"边界切
+
+
+def test_is_index_file_detection():
+    from app.ingest.chunker import _is_index_file
+    assert _is_index_file("1.科研管理制度_index.md")
+    assert _is_index_file("规划计划_index.md")
+    assert not _is_index_file("某政策文件.pdf.md")
+    assert not _is_index_file("常规文档.md")
+
+
+def test_chunk_document_index_file_not_fragmented_by_headings():
+    # index/目录文件即使 >800 也不按标题切碎：整篇作一个 section 交护栏
+    # （大的按段落切成 ≤max 的大块，而非每个 # 标题一个空段）
+    raw = "<!-- chunk_idx=0 chunk_id=ix0 -->\n# 目录\n## 类别A\n" + "条目内容行。\n" * 150
+    chunks = chunk_document("docIx", "政策_index.md", "kb_policy_national", raw)
+    assert len(chunks) >= 1
+    assert all(c.heading is None for c in chunks)  # 不按标题切
+    from app.config import settings
+    assert all(len(c.text) <= settings.chunk_target_max for c in chunks)
+    assert "条目内容行" in "".join(c.text for c in chunks)
