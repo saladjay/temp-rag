@@ -4,6 +4,7 @@
 作为 embedding 输入（spec §3.3-3）。
 """
 import json
+import re
 from pathlib import Path
 
 # 序列化字段顺序（影响语义权重，重要的在前）
@@ -79,3 +80,48 @@ def iter_jsonl_chunks(path: Path) -> list[str]:
             continue
         chunks.append(serialize_project(obj))
     return chunks
+
+
+_CHUNK_MARKER_RE = re.compile(r"<!--\s*chunk_idx=\d+[^>]*-->")
+# 字段提取：容忍 "k":"v" 与 json.dumps 的 "k": "v"（冒号两侧空格）
+_FIELD_RE = re.compile(r'"([^"\\]+)"\s*:\s*"([^"]*)"')
+
+
+def _split_units(raw_text: str) -> list[str]:
+    """按 chunk_idx 标记切成单元正文，剥掉 --- 分隔行与首尾空白。"""
+    parts = _CHUNK_MARKER_RE.split(raw_text)
+    units: list[str] = []
+    for body in parts[1:]:  # parts[0] 是首个标记前的内容（通常为空），跳过
+        cleaned = "\n".join(
+            ln for ln in body.splitlines() if ln.strip() != "---"
+        ).strip()
+        if cleaned:
+            units.append(cleaned)
+    return units
+
+
+def parse_projects(raw_text: str) -> list[dict]:
+    """容错解析 kb_project 文件文本。每个逻辑项目一个 dict（字段名→值）。
+
+    用字段正则提取，不依赖 json.loads，故未闭合的切断记录也能恢复：
+    切断单元（{ 开头但不闭合）+ 紧随其后的裸续片会被合并成一个逻辑项目，
+    其 实际产出成果 字段值由续片补全。返回顺序与文件一致。
+    """
+    units = _split_units(raw_text)
+    blobs: list[str] = []
+    for u in units:
+        if u.startswith("{"):
+            blobs.append(u)
+        elif blobs:
+            # 裸续片：回接到当前（最后一个）逻辑项目
+            blobs[-1] += u
+        # 没有前置 { 单元的孤立续片：丢弃
+    projects: list[dict] = []
+    for blob in blobs:
+        # 切断记录的 实际产出成果 未闭合（无结尾 "）→ 补 " 让正则能匹配到值尾
+        if not blob.endswith('"'):
+            blob = blob + '"'
+        d = {k: v for k, v in _FIELD_RE.findall(blob)}
+        if d:
+            projects.append(d)
+    return projects
