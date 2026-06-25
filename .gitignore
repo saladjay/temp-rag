@@ -10,3 +10,6 @@ kb_registry.json
 venv/
 .claude/
 docker/*.mirror.override.yml
+
+# 知识库原始数据（项目外，按需拷贝；见 docs/HANDOFF.md §7）
+merged/
