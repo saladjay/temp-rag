@@ -110,8 +110,10 @@ milvus_metric = "COSINE"
 # 跑客服服务
 uvicorn app.main:app --reload    # 或 app/main.py 里 create_app()
 
-# 入库（按 KB 目录灌 Milvus）
-python -m app.ingest.pipeline --kb kb_faq --dir ./docs/某库
+# 入库（两步！--kb 不带 kb_ 前缀，内部自动加 → 集合名 kb_<name>）
+python scripts/init_milvus.py --kb faq --dim 1024 --model bge-m3   # ①建集合 kb_faq + 写 kb_registry.json（retrieve 靠它列 KB）
+python -m app.ingest.pipeline --kb faq --dir ./merged/某库          # ②切块 + embed + 写 Milvus
+# 纯文本 .md/.txt 入库：.env 设 PARSER_BACKEND=local（直读文本，跳过云端 MinerU）；二进制文档用 mineru
 
 # kbmap 工具链（离线分类）
 python -m app.kbmap scan --root <merged目录> --out docs/kb_manifest.yaml --draft docs/kb_taxonomy_draft.md
@@ -140,6 +142,15 @@ pytest tests/unit/ingest/         # 只 chunker
 - kbmap 工具链（9 模块 + 33 测试 + 真实数据产物）。
 - 结构感知 chunker（替换原 FixedChunker，已接 pipeline/interfaces，24+测试）。
 - chunker 真实数据验证后的 4 个修复：①图片块 OCR 文字保留 ②chunk_target_min 120→200 ③短文档整篇化(≤800) ④`_index.md` 目录不切碎。
+
+### 本次迁移到新机器时修复（2026-06-25，mock embedder 探测验证）
+- **`app/store/milvus_store.py` pymilvus 兼容**：原代码用 orm `Collection` API（`create_index(index_type=…)`、`search(param=…)`），对 `MilvusClient` **任何版本都无效**（疑似从未对真 Milvus 跑过）。改为 `prepare_index_params`+`index_params`、`search_params=`，2.4–3.0 通用。
+- **`app/ingest/parser.py` 新增 `LocalTextParser` + pipeline 接 `parser_backend`**：merged 数据已是 MinerU 的 `.md/.txt` 产物，无需二次解析；`.env` 设 `PARSER_BACKEND=local` 直读文本，不依赖云端 MinerU。
+- **入库是两步**（见 §6）：先 `init_milvus.py` 建集合 + 注册 KB，再 pipeline 灌；`--kb` **不带** `kb_` 前缀（内部自动加，否则双前缀对不上 retrieve）。
+- **`docker/pull-images.ps1` 加 UTF-8 BOM**：原无 BOM，Windows PowerShell 5.x 读中文乱码导致解析失败（`TerminatorExpectedAtEndOfString`）。直接 `docker pull` 也能用。
+- **依赖锁版本**：新增 `requirements.lock`（`uv pip freeze`），固定 pymilvus 3.0.0 / langgraph 1.2.6 / numpy 2.5 等；`uv pip install -r requirements.lock` 可精确复现（`requirements.txt` 仍是 `>=` 宽约束）。
+- **本机 Redis**：`docker-redis-1`（redis:7-alpine，:6379）是更早 compose 的孤儿容器，碰巧满足 `redis_url`；temp-rag 的 compose 不含 redis。清孤儿容器时**别用** `--remove-orphans`（会带走它）。
+- **云端按需开关**：本机 `128.23.74.3:9091` 的 `/llm/*`（completion Qwen3-32B / embedding bge-m3 / rerank / MinerU）由同事按需开关；关时全 502，真实入库/chat 需云端在线。`.env` 实际 completion 模型是 **Qwen3-32B**（端点 `/llm/Qwen3-32B-Instruct/v1/completions`），非旧文档的 deepseek_v4。
 
 ### 已知遗留（低优先）
 1. **chunker 4 个 Minor finding**（记在原 worktree-kbmap 的 `.superpowers/sdd/progress-chunker.md`，gitignored）：`_APPENDIX_RE` 不识别裸"附件"标题、硬切路径首块 heading 丢失、段落切分边界丢 1 个 `\n\n`、`import re` 未在文件顶。

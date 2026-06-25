@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
   下载本项目配套 Docker 镜像（etcd / minio / milvus / redis）。
 
