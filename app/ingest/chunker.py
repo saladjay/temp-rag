@@ -5,7 +5,6 @@
 设计见 docs/superpowers/specs/2026-06-25-chunker-structural-design.md。
 """
 import hashlib
-import json
 from app.config import settings
 from dataclasses import dataclass
 from .interfaces import Chunk
@@ -229,19 +228,17 @@ def _source_chunk_ids_for(intervals: list[SpanInterval], start: int, end: int) -
 
 
 def _chunk_jsonl(doc_id: str, doc_name: str, kb: str, raw_text: str) -> list[Chunk]:
-    """kb_project 旁路：每行 JSON 一个 chunk，自然语言序列化后作 embedding 输入。"""
-    from app.kbmap.project_serializer import serialize_project
+    """kb_project 旁路：每行 JSON 一个 chunk，自然语言序列化后作 embedding 输入。
+
+    复用 app.kbmap.project_serializer 的 parse_projects（容错，含切断项目恢复）
+    + clean_project + serialize_project 管线，与 kbmap.embed 共用单一源。
+    ordinal 按 emitted chunk 递增 → segment_id 确定性。
+    """
+    from app.kbmap.project_serializer import parse_projects, clean_project, serialize_project
     chunks: list[Chunk] = []
     ordinal = 0
-    for line in raw_text.splitlines():
-        line = line.strip()
-        if not line.startswith("{"):
-            continue
-        try:
-            obj = json.loads(line)
-        except json.JSONDecodeError:
-            continue
-        text = serialize_project(obj)
+    for obj in parse_projects(raw_text):
+        text = serialize_project(clean_project(obj))
         if not text:
             continue
         chunks.append(Chunk(
