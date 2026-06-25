@@ -134,6 +134,14 @@ class Settings(BaseSettings):
     stability_cache_ttl: int = 604800
     stability_semantic_threshold: float = 0.98
 
+    # ========== KB 分类工具链 (kbmap) ==========
+    kbmap_merged_root: str = ""              # 原始 merged/ 目录绝对路径
+    kbmap_embed_batch_size: int = 32         # CloudEmbeddingService 批大小
+    kbmap_chunk_preview_chars: int = 500     # 嵌入时每文件取首 chunk 字数
+    kbmap_outlier_margin: float = 0.05       # 异常文件判定阈值
+    kbmap_cohesion_min: float = 0.5          # 类内凝聚度下限
+    kbmap_separation_max: float = 0.85       # 类间分离度上限（超过考虑合并）
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
