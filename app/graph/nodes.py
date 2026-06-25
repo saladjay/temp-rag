@@ -167,3 +167,39 @@ async def generate_node(
                 "context_text": context, "error": str(e)}
     await cache.set(key, answer)
     return {"answer": answer, "cache_key": key, "cache_hit": False, "context_text": context}
+
+
+# ---------- load_history ----------
+
+async def load_history_node(state: ChatState, session_store=None) -> dict:
+    """加载会话历史节点（async）。
+
+    - 可注入 session_store；未注入时惰性创建 SessionStore。
+    - SessionStore 内部已降级，本节点永不抛错。
+    - 兼容同步桩件（load 返回非协程时直接使用）。
+    """
+    from app.store.session_store import SessionStore
+    session_store = session_store or SessionStore()
+    history = session_store.load(state["session_id"])
+    if hasattr(history, "__await__"):
+        history = await history
+    return {"history": history}
+
+
+# ---------- save_history ----------
+
+async def save_history_node(state: ChatState, session_store=None) -> dict:
+    """保存会话历史节点（async）：追加 user 提问 + assistant 回答。
+
+    - 可注入 session_store；未注入时惰性创建 SessionStore。
+    - SessionStore 内部已降级，本节点永不抛错。
+    - 兼容同步桩件（append 返回非协程时忽略）。
+    """
+    from app.store.session_store import SessionStore
+    session_store = session_store or SessionStore()
+    for role, content in (("user", state["question"]),
+                          ("assistant", state.get("answer", ""))):
+        ret = session_store.append(state["session_id"], role, content)
+        if hasattr(ret, "__await__"):
+            await ret
+    return {}
