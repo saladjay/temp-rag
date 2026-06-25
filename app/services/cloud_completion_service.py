@@ -43,7 +43,8 @@ class CloudCompletionService:
         if self.auth_token:
             headers["Authorization"] = f"Basic {self.auth_token}"
 
-        self._client = httpx.Client(timeout=self.timeout, headers=headers)
+        # trust_env=False：内网云端直连，绕开系统代理软件（否则代理会把内网 IP 也拦截返回 502）
+        self._client = httpx.Client(timeout=self.timeout, headers=headers, trust_env=False)
 
     def complete(
         self,
@@ -227,6 +228,26 @@ class CloudCompletionService:
             return chunk["text"]
         return ""
 
+    def _is_chat_endpoint(self) -> bool:
+        """端点风格：URL 含 /chat/completions 用 messages；裸 /completions（如 Qwen3-Instruct）用 prompt。"""
+        return "/chat/completions" in (self.api_url or "")
+
+    @staticmethod
+    def _messages_to_prompt(messages: List[Dict[str, str]]) -> str:
+        """completions 端点只要 prompt：把 messages 展平成单条提示（中文 instruct 友好）。"""
+        parts = []
+        for m in messages:
+            role = m.get("role", "user")
+            content = m.get("content", "")
+            if role == "system":
+                parts.append(content)
+            elif role == "assistant":
+                parts.append("助手：" + content)
+            else:
+                parts.append("用户：" + content)
+        parts.append("助手：")
+        return "\n\n".join(parts)
+
     def chat(
         self,
         messages: List[Dict[str, str]],
@@ -235,7 +256,11 @@ class CloudCompletionService:
         top_p: float = 0.9,
         stream: bool = False
     ) -> CompletionResult:
-        """对话式补全
+        """对话式补全（端点风格自适应）。
+
+        - chat 端点（URL 含 /chat/completions，如 deepseek_v4）：发 messages 体。
+        - completions 端点（裸 /completions，如 Qwen3-32B-Instruct）：messages 展平成
+          prompt，走 complete()，发 prompt 体。
 
         Args:
             messages: 消息列表 [{"role": "user", "content": "..."}]
@@ -247,18 +272,32 @@ class CloudCompletionService:
         Returns:
             补全结果
         """
-        payload = {
-            "messages": messages,
-            "max_tokens": max_tokens,
-            "temperature": temperature,
-            "top_p": top_p,
-            "stream": stream,
-            "model": self.model_name
-        }
-
-        response = self._client.post(self.api_url, json=payload)
-        response.raise_for_status()
-        return self._parse_completion_response(response.json())
+        import time
+        # 云端可能间歇 502：退避重试（1/2/4s），最多 4 次
+        max_retries, retry_delay, last_err = 3, 1.0, None
+        for attempt in range(max_retries + 1):
+            try:
+                if not self._is_chat_endpoint():
+                    return self.complete(self._messages_to_prompt(messages),
+                                         max_tokens=max_tokens, temperature=temperature,
+                                         top_p=top_p, stream=stream)
+                payload = {
+                    "messages": messages,
+                    "max_tokens": max_tokens,
+                    "temperature": temperature,
+                    "top_p": top_p,
+                    "stream": stream,
+                    "model": self.model_name
+                }
+                response = self._client.post(self.api_url, json=payload)
+                response.raise_for_status()
+                return self._parse_completion_response(response.json())
+            except httpx.HTTPError as e:
+                last_err = e
+                if attempt < max_retries:
+                    time.sleep(retry_delay * (2 ** attempt))
+                    continue
+        raise last_err
 
     def close(self) -> None:
         """关闭HTTP客户端"""

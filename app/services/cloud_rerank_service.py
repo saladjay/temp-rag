@@ -41,7 +41,7 @@ class CloudRerankService:
         if self.auth_token:
             headers["Authorization"] = f"Basic {self.auth_token}"
 
-        self._client = httpx.Client(timeout=self.timeout, headers=headers)
+        self._client = httpx.Client(timeout=self.timeout, headers=headers, trust_env=False)
 
     def rerank(
         self,

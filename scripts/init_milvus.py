@@ -4,6 +4,10 @@
   python scripts/init_milvus.py --kb faq --dim 1024 --model bge-m3
 """
 import argparse
+import sys
+import pathlib
+# 允许从仓库根直接 `python scripts/init_milvus.py` 运行（否则 app 不在 sys.path）
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 from app.config import settings
 from app.store.milvus_store import MilvusStore
 

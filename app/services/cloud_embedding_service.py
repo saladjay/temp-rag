@@ -35,7 +35,7 @@ class CloudEmbeddingService:
         if self.auth_token:
             headers["Authorization"] = f"Basic {self.auth_token}"
 
-        self._client = httpx.Client(timeout=self.timeout, headers=headers)
+        self._client = httpx.Client(timeout=self.timeout, headers=headers, trust_env=False)
 
     def encode(self, texts: str | List[str]) -> np.ndarray:
         """将文本编码为向量
