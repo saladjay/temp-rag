@@ -31,6 +31,8 @@
 
 ## Task 1: `parse_projects` 容错解析（含切断项目恢复）
 
+> **实施后修订（代码评审驱动）：** Step 3 的「纯正则提取」在 real-data 上会因转义 `\"` 截断字段值（JT2022YB27 的 `项目概况` 丢 ~88%）且不解码 `\n`/`\t`。**实际实现改为 `_parse_blob`：优先 `json.loads`（完整记录精确还原转义），仅切断记录回退正则。** 见 fix 提交 `cec289e` + 新增 2 个转义回归测试；spec §4 已同步。下方 Step 3 代码保留作历史记录，以 as-built 为准。
+
 **Files:**
 - Modify: `app/kbmap/project_serializer.py`（顶部加 `import re`，文件末尾追加新函数）
 - Test: `tests/unit/kbmap/test_project_serializer.py`
