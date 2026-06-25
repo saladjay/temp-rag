@@ -144,7 +144,7 @@ pytest tests/unit/ingest/         # 只 chunker
 ### 已知遗留（低优先）
 1. **chunker 4 个 Minor finding**（记在原 worktree-kbmap 的 `.superpowers/sdd/progress-chunker.md`，gitignored）：`_APPENDIX_RE` 不识别裸"附件"标题、硬切路径首块 heading 丢失、段落切分边界丢 1 个 `\n\n`、`import re` 未在文件顶。
 2. **碎片保留决定**：长文档的结构碎片（制度第X条、操作步骤、表单字段）保留不合并 —— 它们是正确检索单元。kb_template 表单字段（~80 个，极短）是唯一残留弱点。
-3. **docker-compose 未入 git**：原机器 `docker/docker-compose.yml`、`docker/docker-compose.mirror.override.yml` 是另一会话的未提交 WIP（GPU Milvus 编排 + 镜像加速覆盖）。**新机器起 Milvus 要从原机器拷这两个文件，或重做。**
+3. **docker-compose 已入 git**：`docker/docker-compose.yml`（CPU Milvus）、`docker-compose-gpu.yml`（GPU）、`pull-images.ps1`、`verify_gpu.sh` 都已提交，随 clone 过来。**只有 `docker/*.mirror.override.yml`（国内镜像加速覆盖）被 `.gitignore` 忽略** —— 它是环境相关的（新机器网络能直拉镜像就不需要；国内拉不动时按 4 行格式重建：把 milvus 镜像源换成 `docker.1panel.live/milvusdb/milvus:v2.4.10`）。
 4. **`kb_policy_group` 质心不稳**（仅 5 文件）：会把"科技创新规划"类查询/政府科技政策误吸为异常 —— 集团文档扩充后自然好转。
 
 ### 并行协作历史
@@ -167,7 +167,8 @@ pytest tests/unit/ingest/         # 只 chunker
 - [ ] Python 3.12 + venv + `pip install -r requirements.txt`。
 - [ ] **从原机器拷 `.env`**（含 CLOUD_*_URL/AUTH_TOKEN、MINERU_* 等）。
 - [ ] **从原机器拷 `merged/` 知识库数据**（项目外，200 文件）。
-- [ ] **从原机器拷 `docker/docker-compose*.yml`**（GPU Milvus 编排，未入 git），起 Milvus + Redis。
+- [ ] **从原机器拷 `docker/docker-compose*.yml`** ~~（未入 git）~~ → 已随 clone 过来；只有 `*.mirror.override.yml`（国内镜像加速）被 gitignore，新机器需要时按 HANDOFF §8 重建。
+- [ ] 起 Milvus（`docker/docker-compose.yml` CPU 版 或 `-gpu.yml`）+ Redis。
 - [ ] 验证云端模型服务可达（embedding / deepseek_v4 completion / rerank）。
 - [ ] （可选）`pytest` 跑一遍验证（95 测试应全绿；5 个 Windows 编码 warning 可忽略）。
 - [ ] （可选）清理已合并的 worktree 分支：`worktree-kbmap` / `gen-deepseek` / `kbmap-reconcile`。
