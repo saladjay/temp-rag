@@ -164,6 +164,23 @@ def test_serialize_project_head_is_prose_with_category_in_parens():
     assert s.endswith("。")
 
 
+def test_iter_jsonl_chunks_recovers_truncated_project_from_file(tmp_path):
+    trunc = ('{"立项年份":"2020","项目名称":"切断项目",'
+             '"实际产出成果":"成果类型：专利，成果名称：P2 ；')
+    content = ('<!-- chunk_idx=0 chunk_id=a -->\n'
+               '{"立项年份":"2019","项目名称":"完整项目"}\n\n---\n\n'
+               '<!-- chunk_idx=1 chunk_id=b -->\n' + trunc + '\n\n---\n\n'
+               '<!-- chunk_idx=2 chunk_id=c -->\n'
+               '成果类型：论文，成果名称：P3 ；\n\n---\n\n')
+    f = tmp_path / "项目导出.xlsx.md"
+    f.write_text(content, encoding="utf-8")
+    chunks = iter_jsonl_chunks(f)
+    assert len(chunks) == 2                    # 切断项目被恢复，不是 1
+    assert "切断项目" in chunks[1]
+    assert "P2" in chunks[1] and "P3" in chunks[1]
+    assert "成果类型" not in chunks[1]         # 已清洗
+
+
 def test_clean_then_serialize_full_pipeline():
     d = {"技术领域": "桥梁工程", "项目名称": "X", "项目编号": "JT1", "立项年份": "2019",
          "承担单位": "某公司", "项目负责人": "张三",

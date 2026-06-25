@@ -55,22 +55,14 @@ def serialize_project(d: dict) -> str:
 
 
 def iter_jsonl_chunks(path: Path) -> list[str]:
-    """读 kb_project 文件：跳过 <!-- chunk --> 标记行和空行，每行 JSON
-    序列化成一个 chunk 文本。返回顺序与文件一致。"""
+    """读 kb_project 文件 → 解析 → 清洗 → 序列化，返回每项目一段文本（按文件顺序）。
+
+    复用 parse_projects（容错，含切断项目恢复）+ clean_project + serialize_project，
+    与入库 chunker._chunk_jsonl 共用同一管线。
+    """
     path = Path(path)
-    chunks: list[str] = []
-    for line in path.read_text(encoding="utf-8").splitlines():
-        line = line.strip()
-        if not line or line.startswith("<!--"):
-            continue
-        if not line.startswith("{"):
-            continue
-        try:
-            obj = json.loads(line)
-        except json.JSONDecodeError:
-            continue
-        chunks.append(serialize_project(obj))
-    return chunks
+    text = path.read_text(encoding="utf-8")
+    return [serialize_project(clean_project(d)) for d in parse_projects(text)]
 
 
 _CHUNK_MARKER_RE = re.compile(r"<!--\s*chunk_idx=\d+[^>]*-->")
