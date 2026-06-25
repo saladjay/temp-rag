@@ -70,9 +70,20 @@ class CloudEmbeddingService:
             "model": self.model_name
         }
 
-        response = self._client.post(self.api_url, json=payload)
-        response.raise_for_status()
-        return response.json()
+        # 云端可能间歇 502：退避重试（1/2/4s × 4），大批量入库必备
+        import time
+        max_retries, retry_delay, last_err = 3, 1.0, None
+        for attempt in range(max_retries + 1):
+            try:
+                response = self._client.post(self.api_url, json=payload)
+                response.raise_for_status()
+                return response.json()
+            except httpx.HTTPError as e:
+                last_err = e
+                if attempt < max_retries:
+                    time.sleep(retry_delay * (2 ** attempt))
+                    continue
+        raise last_err
 
     def _parse_embedding_response(self, response: dict) -> np.ndarray:
         """解析API响应，提取嵌入向量
