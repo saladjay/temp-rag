@@ -46,7 +46,6 @@ def parse_raw_chunks(raw_text: str) -> list[RawChunk]:
 
 
 # 噪声正则
-_IMG_BLOCK_RE = re.compile(r"<图片内容\|start>.*?<图片内容\|end>", re.DOTALL)
 _IMG_TAG_RE = re.compile(r"<img\s[^>]*?/?>")
 _MULTI_BLANK_RE = re.compile(r"\n{3,}")
 
@@ -64,9 +63,11 @@ def _strip_leading_meta_table(text: str) -> str:
 
 
 def clean_span(text: str) -> str:
-    """剥离版式噪声：图片块、img 标签、开头注入元表、归一化空行。"""
-    text = _IMG_BLOCK_RE.sub("", text)
+    """剥离版式噪声：img 标签（URL）、<图片内容> 包装标记、开头注入元表、归一化空行。
+    注意：只剥 <图片内容|start>/<图片内容|end> 标记本身，保留中间的 OCR 文字
+    （图片里的发文机关/印章等正文）。"""
     text = _IMG_TAG_RE.sub("", text)
+    text = text.replace("<图片内容|start>", "").replace("<图片内容|end>", "")
     text = _strip_leading_meta_table(text)
     text = _MULTI_BLANK_RE.sub("\n\n", text)
     return text.strip()

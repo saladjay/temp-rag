@@ -122,7 +122,7 @@ class Settings(BaseSettings):
     chunk_tolerance: int = 50
     # 结构感知切块护栏
     chunk_target_max: int = 1500
-    chunk_target_min: int = 120
+    chunk_target_min: int = 200
 
     # ========== 生成 / 重写 / 稳定性 ==========
     gen_temperature: float = 0.0

@@ -5,7 +5,7 @@ from app.ingest.chunker import Chunk, assign_segment_id
 def test_config_chunker_defaults():
     assert settings.chunker_backend == "structural"
     assert settings.chunk_target_max == 1500
-    assert settings.chunk_target_min == 120
+    assert settings.chunk_target_min == 200
 
 
 def test_assign_segment_id_is_deterministic():
@@ -64,6 +64,7 @@ def test_clean_span_strips_image_blocks_and_img_tags():
     assert "<img" not in cleaned
     assert "https://" not in cleaned
     assert "前言" in cleaned and "正文部分" in cleaned
+    assert "图片说明" in cleaned  # <图片内容> 块内的 OCR 文字必须保留（只剥 img 标签+包装标记）
 
 
 def test_clean_span_strips_leading_meta_table_only():
