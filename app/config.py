@@ -1,7 +1,6 @@
 """Application configuration module.
 
 This module provides configuration for the HTTP server and cloud services.
-For library configuration, see app.core.config.
 """
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Optional, List

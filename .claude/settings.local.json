@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd:*)",
+      "Bash(tail:*)",
+      "Bash(head:*)",
+      "Bash(echo exit: $?:*)"
+    ]
+  }
+}
