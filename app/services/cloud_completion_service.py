@@ -261,7 +261,8 @@ class CloudCompletionService:
             role = m.get("role", "user")
             content = m.get("content", "")
             parts.append(f"<|im_start|>{role}\n{content}<|im_end|>")
-        parts.append("<|im_start|>assistant\n")
+        # 预填空 <think> 块 → 关闭 Qwen3 思维链（不再生成推理，直接出正答；省 token、防截断）
+        parts.append("<|im_start|>assistant\n<think>\n\n</think>\n\n")
         return "\n".join(parts)
 
     def chat(
