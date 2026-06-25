@@ -8,3 +8,4 @@ kb_registry.json
 .pytest_cache/
 .venv/
 venv/
+.claude/
