@@ -115,11 +115,14 @@ class Settings(BaseSettings):
 
     # ========== 入库（模型可插拔） ==========
     parser_backend: str = "mineru"        # mineru | local
-    chunker_backend: str = "fixed"        # fixed | recursive
+    chunker_backend: str = "structural"   # structural（结构感知，默认）| fixed（回退）
     embedding_backend: str = "cloud"      # cloud (bge-m3)
     chunk_size: int = 500
     chunk_overlap: int = 80
     chunk_tolerance: int = 50
+    # 结构感知切块护栏
+    chunk_target_max: int = 1500
+    chunk_target_min: int = 120
 
     # ========== 生成 / 重写 / 稳定性 ==========
     gen_temperature: float = 0.0

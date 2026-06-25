@@ -1,6 +1,6 @@
 """入库流水线单元测试：用桩件验证 run_ingest 编排与 MilvusWriter 幂等。"""
 import numpy as np
-from app.ingest.chunker import FixedChunker
+from app.ingest.chunker import StructuralChunker
 from app.ingest.embedder import CloudEmbedder
 from app.ingest.writer import MilvusWriter
 from app.ingest.pipeline import run_ingest
@@ -30,7 +30,7 @@ class SpyWriter:
 
 def test_run_ingest_calls_chunk_embed_write(monkeypatch):
     out = run_ingest("faq", "x.txt",
-                     parser=StubParser(), chunker=FixedChunker(size=20, overlap=5, tolerance=10),
+                     parser=StubParser(), chunker=StructuralChunker(),
                      embedder=StubEmbedder(), writer=SpyWriter())
     assert out >= 1
 
