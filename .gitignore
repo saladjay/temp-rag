@@ -9,4 +9,4 @@ kb_registry.json
 .venv/
 venv/
 .claude/
-docker/docker-compose-gpu.mirror.override.yml
+docker/*.mirror.override.yml
