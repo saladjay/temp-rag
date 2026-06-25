@@ -11,7 +11,8 @@ def serialize_project(d: dict) -> str:
     """把（已清洗的）项目 dict 序列化成自然语言文本。
 
     头部一句散文（技术领域打头），随后主要研究内容/关键技术问题/成果分句。
-    字段值原样输出（不做改写/概括，保证确定性）；空字段与弃用字段不出现。
+    字段值原样输出（不做改写/概括，保证确定性）；正文分句前剥掉字段值末尾的
+    句末标点（。；，;.）再补一个句号，避免出现 。。 / ；。 叠号；空字段与弃用字段不出现。
     成果需先经 clean_project 清洗，本函数只负责排版。
     """
     def g(key: str) -> str:
@@ -45,11 +46,11 @@ def serialize_project(d: dict) -> str:
         sentences.append("，".join(head_bits) + "。")
 
     if content:
-        sentences.append(f"主要研究内容：{content}。")
+        sentences.append(f"主要研究内容：{content.rstrip('。；，;.')}。")
     if problem:
-        sentences.append(f"拟解决的关键技术问题：{problem}。")
+        sentences.append(f"拟解决的关键技术问题：{problem.rstrip('。；，;.')}。")
     if achievements:
-        sentences.append(f"已产出成果：{achievements}。")
+        sentences.append(f"已产出成果：{achievements.rstrip('。；，;.')}。")
 
     return "".join(sentences)
 

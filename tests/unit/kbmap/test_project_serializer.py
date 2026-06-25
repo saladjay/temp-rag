@@ -1,7 +1,7 @@
-from app.kbmap.project_serializer import serialize_project, iter_jsonl_chunks
+from app.kbmap.project_serializer import (
+    clean_project, iter_jsonl_chunks, parse_projects, serialize_project,
+)
 from tests.fixpaths import FIXTURE_MERGED  # 见 Step 2 注释
-
-from app.kbmap.project_serializer import parse_projects
 
 
 def test_parse_projects_complete_records():
@@ -101,9 +101,6 @@ def test_parse_projects_decodes_json_escapes():
     assert "\\n" not in mc                # 不是字面 backslash-n
 
 
-from app.kbmap.project_serializer import clean_project
-
-
 def test_clean_project_strips_achievement_boilerplate_and_dedupes():
     d = {"实际产出成果":
          "成果类型：专利，成果名称：自锁式行走轮 ；"
@@ -188,3 +185,16 @@ def test_clean_then_serialize_full_pipeline():
     s = serialize_project(clean_project(d))
     assert "已产出成果：A；B。" in s          # 去重+全留+句末句号
     assert "成果类型" not in s and "成果名称" not in s
+
+
+def test_serialize_project_avoids_double_period_when_value_ends_with_punct():
+    # 字段值本身以句末标点结尾时，不再叠出 。。 / ；。
+    d = {"技术领域": "桥梁工程", "项目名称": "X",
+         "主要研究内容": "研究内容以句号结尾。",
+         "拟解决的关键技术问题": "问题；",
+         "实际产出成果": "成果A；成果B；"}
+    s = serialize_project(clean_project(d))
+    assert "。。" not in s and "；。" not in s and "；；" not in s
+    assert "主要研究内容：研究内容以句号结尾。" in s   # 仅一个句号
+    assert "拟解决的关键技术问题：问题。" in s
+    assert "已产出成果：成果A；成果B。" in s          # ；连接的成果 list 不受影响
