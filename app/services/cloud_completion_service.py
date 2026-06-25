@@ -3,7 +3,25 @@ from typing import List, Optional, Dict, Iterator, TypedDict
 import httpx
 import requests
 import json
+import re
 from app.config import settings
+
+_THINK_RE = re.compile(r"<think>.*?</think>", re.DOTALL)
+
+
+def _strip_think(text: str) -> str:
+    """剥掉思维链模型（Qwen3 等）混入正文的 <think>...</think>，只留正式回答。
+
+    - 正常闭合：删 <think>...</think>。
+    - 未闭合（被 max_tokens 截断在思维中）：丢弃 <think> 及其后。
+    """
+    if not text:
+        return text
+    if "</think>" in text:
+        text = _THINK_RE.sub("", text)
+    elif "<think>" in text:
+        text = text.split("<think>", 1)[0]
+    return text.strip()
 
 
 class CompletionResult(TypedDict):
@@ -75,13 +93,12 @@ class CloudCompletionService:
 
         payload = {
             "prompt": prompt,
-            "max_tokens": max_tokens,
             "temperature": temperature,
             "top_p": top_p,
             "stream": stream,
             "model": self.model_name
         }
-
+        # 不发 max_tokens：让模型自然收尾，避免思维链模型 think 消耗 token 后正文被截断
         response = self._client.post(self.api_url, json=payload)
         response.raise_for_status()
         return self._parse_completion_response(response.json())
@@ -124,7 +141,7 @@ class CloudCompletionService:
             raise ValueError(f"Unexpected response format: {response}")
 
         return {
-            "text": text,
+            "text": _strip_think(text),
             "finish_reason": finish_reason,
             "usage": usage
         }
@@ -234,19 +251,18 @@ class CloudCompletionService:
 
     @staticmethod
     def _messages_to_prompt(messages: List[Dict[str, str]]) -> str:
-        """completions 端点只要 prompt：把 messages 展平成单条提示（中文 instruct 友好）。"""
+        """completions 端点只要 prompt：用 ChatML 模板拼（Qwen3/GLM 等 instruct 模型原生格式）。
+
+        裸 /v1/completions 端点不会自动套 chat template，必须自己拼 ChatML，否则模型
+        识别不出指令边界、易吐推理前言。
+        """
         parts = []
         for m in messages:
             role = m.get("role", "user")
             content = m.get("content", "")
-            if role == "system":
-                parts.append(content)
-            elif role == "assistant":
-                parts.append("助手：" + content)
-            else:
-                parts.append("用户：" + content)
-        parts.append("助手：")
-        return "\n\n".join(parts)
+            parts.append(f"<|im_start|>{role}\n{content}<|im_end|>")
+        parts.append("<|im_start|>assistant\n")
+        return "\n".join(parts)
 
     def chat(
         self,
@@ -283,7 +299,6 @@ class CloudCompletionService:
                                          top_p=top_p, stream=stream)
                 payload = {
                     "messages": messages,
-                    "max_tokens": max_tokens,
                     "temperature": temperature,
                     "top_p": top_p,
                     "stream": stream,
