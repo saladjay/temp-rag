@@ -36,9 +36,11 @@ class Settings(BaseSettings):
     cloud_rerank_model: str = "embed_rerank"
     cloud_rerank_timeout: int = 30
 
-    # 云端文本补全服务配置
-    cloud_completion_url: Optional[str] = None
-    cloud_completion_model: str = "Qwen3-32B"
+    # 云端文本补全服务配置（deepseek_v4，OpenAI 兼容 chat-completions 端点）
+    # 注意：该端点要求 messages 体；生成节点必须调 CloudCompletionService.chat(messages=...)，
+    # 不能用 .complete(prompt=...)（后者发 prompt 字段会被端点拒绝 "error parsing the body"）。
+    cloud_completion_url: str = "http://128.23.74.3:9091/AIAPLLM/chat/max/v1/chat/completions"
+    cloud_completion_model: str = "deepseek_v4"
     cloud_completion_timeout: int = 60
 
     # GLM 服务配置
