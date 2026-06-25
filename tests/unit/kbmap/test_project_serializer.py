@@ -79,3 +79,23 @@ def test_iter_jsonl_chunks_one_project_per_chunk():
     assert len(chunks) == 2
     assert "测试项目一" in chunks[0]
     assert "测试项目二" in chunks[1]
+
+
+def test_parse_projects_preserves_escaped_quotes_in_values():
+    # 值内含 JSON 转义引号 \" —— 必须完整保留，不能在第一个 \" 处截断（real-data 回归）
+    raw = ('<!-- chunk_idx=0 chunk_id=a -->\n'
+           '{"立项年份":"2022","项目名称":"含转义引号项目",'
+           '"项目概况":"《规划》中\\"第8纵\\"的重要组成部分"}')
+    projects = parse_projects(raw)
+    assert len(projects) == 1
+    assert '"第8纵"' in projects[0]["项目概况"]   # 转义引号解码为真实引号，整段保留
+    assert "重要" in projects[0]["项目概况"]
+
+
+def test_parse_projects_decodes_json_escapes():
+    # 值内含 \n \t —— 解码为真实换行/制表（clean_project 依赖真实字符，非字面 \n）
+    raw = ('<!-- chunk_idx=0 chunk_id=a -->\n'
+           '{"项目名称":"X","主要研究内容":"行一\\n行二\\t缩进"}')
+    mc = parse_projects(raw)[0]["主要研究内容"]
+    assert "\n" in mc and "\t" in mc     # 真实换行/制表
+    assert "\\n" not in mc                # 不是字面 backslash-n

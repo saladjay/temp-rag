@@ -100,12 +100,29 @@ def _split_units(raw_text: str) -> list[str]:
     return units
 
 
+def _parse_blob(blob: str) -> dict:
+    """解析一个逻辑项目文本（可能含续片回接）。
+    优先 json.loads：完整记录可精确还原转义引号/换行/制表；
+    失败（切断记录未闭合）时回退字段正则（best-effort，丢弃尾字段）。
+    """
+    try:
+        obj = json.loads(blob)
+        if isinstance(obj, dict):
+            return obj
+    except json.JSONDecodeError:
+        pass
+    # 回退：切断记录未闭合 → 补 " 让最后一个字段值闭合，再字段正则提取
+    if not blob.endswith('"'):
+        blob = blob + '"'
+    return {k: v for k, v in _FIELD_RE.findall(blob)}
+
+
 def parse_projects(raw_text: str) -> list[dict]:
     """容错解析 kb_project 文件文本。每个逻辑项目一个 dict（字段名→值）。
 
-    用字段正则提取，不依赖 json.loads，故未闭合的切断记录也能恢复：
-    切断单元（{ 开头但不闭合）+ 紧随其后的裸续片会被合并成一个逻辑项目，
-    其 实际产出成果 字段值由续片补全。返回顺序与文件一致。
+    优先 json.loads（完整记录精确还原转义）；切断单元（{ 开头但不闭合）+
+    紧随其后的裸续片合并成一个逻辑项目，json.loads 失败时回退字段正则恢复。
+    返回顺序与文件一致。
     """
     units = _split_units(raw_text)
     blobs: list[str] = []
@@ -118,10 +135,7 @@ def parse_projects(raw_text: str) -> list[dict]:
         # 没有前置 { 单元的孤立续片：丢弃
     projects: list[dict] = []
     for blob in blobs:
-        # 切断记录的 实际产出成果 未闭合（无结尾 "）→ 补 " 让正则能匹配到值尾
-        if not blob.endswith('"'):
-            blob = blob + '"'
-        d = {k: v for k, v in _FIELD_RE.findall(blob)}
+        d = _parse_blob(blob)
         if d:
             projects.append(d)
     return projects
