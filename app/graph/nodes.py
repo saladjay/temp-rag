@@ -66,40 +66,62 @@ def rewrite_node(state: ChatState, llm=None) -> dict:
 # ---------- retrieve ----------
 
 def retrieve_node(state: ChatState, embedder=None, store=None) -> dict:
-    """并行多知识库检索节点：embed → 多 collection 检索 → 写回 retrieved。"""
+    """并行多知识库检索节点：embed → 多 collection 检索 → 写回 retrieved + 检索耗时/IO 追踪。"""
+    import time
     from app.store.milvus_store import MilvusStore
     embedder = embedder or _default_embedder()
     store = store or MilvusStore()
     q = state["rewritten_query"]
+    t0 = time.perf_counter()
     vec = embedder.embed([q])[0].tolist()
+    t_embed = time.perf_counter() - t0
     kbs = state.get("kb_names") or store.list_kbs()
+    t1 = time.perf_counter()
     hits = store.search(vec, kbs, top_k=settings.milvus_top_k_per_kb, ef=settings.milvus_ef)
+    t_search = time.perf_counter() - t1
     retrieved = [{"doc_id": h.doc_id, "segment_id": h.segment_id, "doc_name": h.doc_name,
                   "text": h.text, "score": h.score, "source": h.source} for h in hits]
-    return {"retrieved": retrieved}
+    trace = {
+        "query": q, "kbs": list(kbs),
+        "embed_ms": round(t_embed * 1000), "search_ms": round(t_search * 1000),
+        "total_ms": round((t_embed + t_search) * 1000), "n_hits": len(hits),
+        "top3": [{"doc_name": h.doc_name, "score": round(float(h.score), 4), "source": h.source}
+                 for h in hits[:3]],
+    }
+    return {"retrieved": retrieved, "retrieve_trace": trace}
 
 
 # ---------- rerank ----------
 
 def rerank_node(state: ChatState, reranker=None, top_n: Optional[int] = None) -> dict:
-    """重排节点：确定排序 score DESC → doc_id ASC → segment_id ASC。
+    """重排节点：确定排序 score DESC → doc_id ASC → segment_id ASC + 重排耗时/IO 追踪。
 
     - 重排器异常：降级用检索原分排序（同样确定性二级键）。
     - 空 retrieved：直接返回空列表（不触达重排器）。
     """
+    import time
     top_n = top_n or settings.gen_top_n_context
     retrieved = state.get("retrieved") or []
+    q = state.get("rewritten_query", "")
     if not retrieved:
-        return {"sources": []}
+        return {"sources": [], "rerank_trace": {"query": q, "n_in": 0, "ms": 0, "fallback": False, "top": []}}
     reranker = reranker or _default_reranker()
     docs = [r["text"] for r in retrieved]
+    t0 = time.perf_counter()
     try:
-        results = reranker.rerank(state["rewritten_query"], docs, top_k=top_n)
+        results = reranker.rerank(q, docs, top_k=top_n)
     except Exception as e:
+        t_rerank = time.perf_counter() - t0
         logger.warning("rerank_failed_fallback", error=str(e))
         # 降级：用检索原分排序（同确定二级键）
         ordered = sorted(retrieved, key=lambda r: (-r.get("score", 0), r["doc_id"], r["segment_id"]))
-        return {"sources": ordered[:top_n]}
+        sources = ordered[:top_n]
+        trace = {"query": q, "n_in": len(docs), "ms": round(t_rerank * 1000), "fallback": True,
+                 "error": str(e)[:60],
+                 "top": [{"doc_name": s["doc_name"], "score": round(float(s.get("score", 0)), 4),
+                          "source": s["source"]} for s in sources]}
+        return {"sources": sources, "rerank_trace": trace}
+    t_rerank = time.perf_counter() - t0
     # 二级排序：score DESC → doc_id+segment_id ASC
     pairs = []
     for r in results:
@@ -107,7 +129,11 @@ def rerank_node(state: ChatState, reranker=None, top_n: Optional[int] = None) ->
         src = retrieved[idx]
         pairs.append((r["score"], src["doc_id"], src["segment_id"], src))
     pairs.sort(key=lambda x: (-x[0], x[1], x[2]))
-    return {"sources": [p[3] for p in pairs[:top_n]]}
+    sources = [p[3] for p in pairs[:top_n]]
+    trace = {"query": q, "n_in": len(docs), "ms": round(t_rerank * 1000), "fallback": False,
+             "top": [{"doc_name": p[3]["doc_name"], "score": round(float(p[0]), 4),
+                      "source": p[3]["source"]} for p in pairs[:top_n]]}
+    return {"sources": sources, "rerank_trace": trace}
 
 
 # ---------- generate ----------

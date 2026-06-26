@@ -93,12 +93,13 @@ class CloudCompletionService:
 
         payload = {
             "prompt": prompt,
+            "max_tokens": max_tokens,
             "temperature": temperature,
             "top_p": top_p,
             "stream": stream,
             "model": self.model_name
         }
-        # 不发 max_tokens：让模型自然收尾，避免思维链模型 think 消耗 token 后正文被截断
+        # 思考模式已关（空 think 预填），恢复 max_tokens 上限——否则端点用小默认值会截断正文
         response = self._client.post(self.api_url, json=payload)
         response.raise_for_status()
         return self._parse_completion_response(response.json())
@@ -300,6 +301,7 @@ class CloudCompletionService:
                                          top_p=top_p, stream=stream)
                 payload = {
                     "messages": messages,
+                    "max_tokens": max_tokens,
                     "temperature": temperature,
                     "top_p": top_p,
                     "stream": stream,
