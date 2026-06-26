@@ -1,5 +1,5 @@
 from app.config import settings
-from app.ingest.chunker import Chunk, assign_segment_id
+from app.ingest.chunker import Chunk, assign_segment_id, clean_span
 
 
 def test_config_chunker_defaults():
@@ -309,3 +309,57 @@ def test_chunk_document_index_file_not_fragmented_by_headings():
     from app.config import settings
     assert all(len(c.text) <= settings.chunk_target_max for c in chunks)
     assert "条目内容行" in "".join(c.text for c in chunks)
+
+
+def test_clean_span_strips_word_toc_lines():
+    # Word 导出的目录：每行带 _Toc 书签 + HYPERLINK/PAGEREF，是正文标题的重复，无检索价值
+    text = (
+        'TOC \\o "1-2" \\h \\u HYPERLINK \\l _Toc1655919882 一、发展现状 PAGEREF _Toc1655919882 - 1 -\n'
+        ' HYPERLINK \\l _Toc1853061321 二、发展思路 PAGEREF _Toc1853061321 - 2 -\n'
+        '一、发展现状与形势\n实际正文内容，讲发展情况。'
+    )
+    out = clean_span(text)
+    assert "_Toc" not in out
+    assert "HYPERLINK" not in out
+    assert "一、发展现状与形势" in out   # 真实标题保留
+    assert "实际正文内容" in out
+
+
+def test_clean_span_strips_faq_question_index():
+    # FAQ 顶部"问题索引"：数字.问题？ P页码 —— 正文里有完整问答，索引是重复噪声
+    text = (
+        "常见问题解答\n"
+        "1.忘记密码，该怎么办？ P2~3\n"
+        "2.项目第一负责人离职，怎么办？ P4\n"
+        "1.忘记密码，该怎么办？\n①点击【忘记密码】②输入手机号。【解决办法1】登录平台点忘记密码重置。"
+    )
+    out = clean_span(text)
+    assert "P2~3" not in out and "P4" not in out      # 索引行（带页码）被剥
+    assert "①点击【忘记密码】" in out                   # 真实问答保留
+    assert "【解决办法1】" in out
+
+
+def test_chunk_document_merges_heading_only_into_next():
+    # "一、总则" 后紧跟子标题"（一）目的"+正文 → 不该有孤立的"一、总则"chunk
+    body = "（一）目的\n" + "为规范集团科技项目管理，制定本办法，适用于集团各类科研项目。" * 60
+    raw = "<!-- chunk_idx=0 chunk_id=a -->\n一、总则\n" + body
+    chunks = chunk_document("docH", "管理办法.doc", "kb_regulation", raw)
+    # 不应存在文本恰好是"一、总则"的孤立 chunk
+    assert not any(c.text.strip() == "一、总则" for c in chunks)
+    # "一、总则"应与其后续（目的/正文）同 chunk
+    assert any("一、总则" in c.text and "目的" in c.text for c in chunks)
+
+
+def test_chunk_document_no_toc_fragment():
+    # 含 Word 目录的政策文档：不应产出目录碎片 chunk，真实章节正文保留
+    body = "一、发展现状与形势\n" + "当前交通运输发展态势良好。" * 40
+    raw = (
+        '<!-- chunk_idx=0 chunk_id=toc -->\n'
+        'TOC \\o "1-2" \\h \\u HYPERLINK \\l _Toc1 一、发展现状 PAGEREF _Toc1 - 1 -\n'
+        '<!-- chunk_idx=1 chunk_id=body -->\n' + body
+    )
+    chunks = chunk_document("docT", "十四五规划.doc", "kb_policy_national", raw)
+    joined = "".join(c.text for c in chunks)
+    assert "_Toc" not in joined and "HYPERLINK" not in joined   # 目录噪声被剥
+    assert "发展现状与形势" in joined                            # 真实章节保留
+    assert "当前交通运输发展态势良好" in joined
