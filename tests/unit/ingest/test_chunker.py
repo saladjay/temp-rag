@@ -325,6 +325,17 @@ def test_clean_span_strips_word_toc_lines():
     assert "实际正文内容" in out
 
 
+def test_chunk_document_merges_heading_only_into_next():
+    # "一、总则" 后紧跟子标题"（一）目的"+正文 → 不该有孤立的"一、总则"chunk
+    body = "（一）目的\n" + "为规范集团科技项目管理，制定本办法，适用于集团各类科研项目。" * 60
+    raw = "<!-- chunk_idx=0 chunk_id=a -->\n一、总则\n" + body
+    chunks = chunk_document("docH", "管理办法.doc", "kb_regulation", raw)
+    # 不应存在文本恰好是"一、总则"的孤立 chunk
+    assert not any(c.text.strip() == "一、总则" for c in chunks)
+    # "一、总则"应与其后续（目的/正文）同 chunk
+    assert any("一、总则" in c.text and "目的" in c.text for c in chunks)
+
+
 def test_chunk_document_no_toc_fragment():
     # 含 Word 目录的政策文档：不应产出目录碎片 chunk，真实章节正文保留
     body = "一、发展现状与形势\n" + "当前交通运输发展态势良好。" * 40

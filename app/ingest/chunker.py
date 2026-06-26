@@ -156,6 +156,31 @@ def split_by_structure(full_text: str) -> list[Section]:
     return sections
 
 
+def _merge_heading_only_forward(sections: list[Section]) -> list[Section]:
+    """纯标题无正文的 section（如"一、总则"后紧跟子标题"（一）目的"）并入下一个
+    section，标题作前缀。消除裸标题碎片——标题应与其后续子标题+正文同块
+    （chunk 审计 P1/O4：policy_national 实测 475 个 heading-only 碎片）。"""
+    out: list[Section] = []
+    pending_text: str | None = None
+    pending_start = 0
+    for sec in sections:
+        if sec.heading is not None and sec.text.strip() == sec.heading.strip():
+            if pending_text is None:
+                pending_text = sec.heading
+                pending_start = sec.start
+            else:
+                pending_text = pending_text + "\n" + sec.heading
+            continue
+        if pending_text is not None:
+            sec = Section(heading=sec.heading, text=pending_text + "\n" + sec.text,
+                          start=pending_start)  # 用最早标题的 start，span 覆盖标题+正文
+            pending_text = None
+        out.append(sec)
+    if pending_text is not None:
+        out.append(Section(heading=None, text=pending_text, start=pending_start))
+    return out
+
+
 _SENT_SPLIT_RE = re.compile(r"(?<=[。！？；])")
 
 
@@ -279,6 +304,7 @@ def chunk_document(doc_id: str, doc_name: str, kb: str, raw_text: str) -> list[C
     sections = ([Section(heading=None, text=full, start=0)]
                 if _is_index_file(doc_name)
                 else split_by_structure(full))
+    sections = _merge_heading_only_forward(sections)
     sections = apply_size_guardrails(
         sections, settings.chunk_target_max, settings.chunk_target_min
     )
