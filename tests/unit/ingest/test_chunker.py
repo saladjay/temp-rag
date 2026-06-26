@@ -325,6 +325,20 @@ def test_clean_span_strips_word_toc_lines():
     assert "实际正文内容" in out
 
 
+def test_clean_span_strips_faq_question_index():
+    # FAQ 顶部"问题索引"：数字.问题？ P页码 —— 正文里有完整问答，索引是重复噪声
+    text = (
+        "常见问题解答\n"
+        "1.忘记密码，该怎么办？ P2~3\n"
+        "2.项目第一负责人离职，怎么办？ P4\n"
+        "1.忘记密码，该怎么办？\n①点击【忘记密码】②输入手机号。【解决办法1】登录平台点忘记密码重置。"
+    )
+    out = clean_span(text)
+    assert "P2~3" not in out and "P4" not in out      # 索引行（带页码）被剥
+    assert "①点击【忘记密码】" in out                   # 真实问答保留
+    assert "【解决办法1】" in out
+
+
 def test_chunk_document_merges_heading_only_into_next():
     # "一、总则" 后紧跟子标题"（一）目的"+正文 → 不该有孤立的"一、总则"chunk
     body = "（一）目的\n" + "为规范集团科技项目管理，制定本办法，适用于集团各类科研项目。" * 60

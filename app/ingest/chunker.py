@@ -47,6 +47,8 @@ def parse_raw_chunks(raw_text: str) -> list[RawChunk]:
 # 噪声正则
 _IMG_TAG_RE = re.compile(r"<img\s[^>]*?/?>")
 _MULTI_BLANK_RE = re.compile(r"\n{3,}")
+# FAQ 问题索引行：「数字.问题？ P页码」是文档顶部的问题目录，正文里有完整问答，此处是重复噪声
+_FAQ_INDEX_RE = re.compile(r"[ \t]*\d+[.、][^？?\n]{0,40}[？?][ \t]*P\d")
 
 
 def _strip_leading_meta_table(text: str) -> str:
@@ -68,6 +70,9 @@ def clean_span(text: str) -> str:
     # Word 目录(TOC)噪声：含 _Toc 书签的整行是正文标题的重复，无检索价值，删整行
     if "_Toc" in text:
         text = "\n".join(ln for ln in text.splitlines() if "_Toc" not in ln)
+    # FAQ 问题索引行（带 P 页码的问题目录）剥掉，保留正文里的完整问答
+    if _FAQ_INDEX_RE.search(text):
+        text = "\n".join(ln for ln in text.splitlines() if not _FAQ_INDEX_RE.match(ln))
     text = _IMG_TAG_RE.sub("", text)
     text = text.replace("<图片内容|start>", "").replace("<图片内容|end>", "")
     text = _strip_leading_meta_table(text)
