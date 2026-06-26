@@ -47,6 +47,8 @@ def parse_raw_chunks(raw_text: str) -> list[RawChunk]:
 # 噪声正则
 _IMG_TAG_RE = re.compile(r"<img\s[^>]*?/?>")
 _MULTI_BLANK_RE = re.compile(r"\n{3,}")
+# FAQ 问题索引行：「数字.问题？ P页码」是文档顶部的问题目录，正文里有完整问答，此处是重复噪声
+_FAQ_INDEX_RE = re.compile(r"[ \t]*\d+[.、][^？?\n]{0,40}[？?][ \t]*P\d")
 
 
 def _strip_leading_meta_table(text: str) -> str:
@@ -65,6 +67,12 @@ def clean_span(text: str) -> str:
     """剥离版式噪声：img 标签（URL）、<图片内容> 包装标记、开头注入元表、归一化空行。
     注意：只剥 <图片内容|start>/<图片内容|end> 标记本身，保留中间的 OCR 文字
     （图片里的发文机关/印章等正文）。"""
+    # Word 目录(TOC)噪声：含 _Toc 书签的整行是正文标题的重复，无检索价值，删整行
+    if "_Toc" in text:
+        text = "\n".join(ln for ln in text.splitlines() if "_Toc" not in ln)
+    # FAQ 问题索引行（带 P 页码的问题目录）剥掉，保留正文里的完整问答
+    if _FAQ_INDEX_RE.search(text):
+        text = "\n".join(ln for ln in text.splitlines() if not _FAQ_INDEX_RE.match(ln))
     text = _IMG_TAG_RE.sub("", text)
     text = text.replace("<图片内容|start>", "").replace("<图片内容|end>", "")
     text = _strip_leading_meta_table(text)
@@ -151,6 +159,31 @@ def split_by_structure(full_text: str) -> list[Section]:
         heading = first_line if _looks_like_heading(first_line) else None
         sections.append(Section(heading=heading, text=chunk_text, start=start_offset))
     return sections
+
+
+def _merge_heading_only_forward(sections: list[Section]) -> list[Section]:
+    """纯标题无正文的 section（如"一、总则"后紧跟子标题"（一）目的"）并入下一个
+    section，标题作前缀。消除裸标题碎片——标题应与其后续子标题+正文同块
+    （chunk 审计 P1/O4：policy_national 实测 475 个 heading-only 碎片）。"""
+    out: list[Section] = []
+    pending_text: str | None = None
+    pending_start = 0
+    for sec in sections:
+        if sec.heading is not None and sec.text.strip() == sec.heading.strip():
+            if pending_text is None:
+                pending_text = sec.heading
+                pending_start = sec.start
+            else:
+                pending_text = pending_text + "\n" + sec.heading
+            continue
+        if pending_text is not None:
+            sec = Section(heading=sec.heading, text=pending_text + "\n" + sec.text,
+                          start=pending_start)  # 用最早标题的 start，span 覆盖标题+正文
+            pending_text = None
+        out.append(sec)
+    if pending_text is not None:
+        out.append(Section(heading=None, text=pending_text, start=pending_start))
+    return out
 
 
 _SENT_SPLIT_RE = re.compile(r"(?<=[。！？；])")
@@ -276,6 +309,7 @@ def chunk_document(doc_id: str, doc_name: str, kb: str, raw_text: str) -> list[C
     sections = ([Section(heading=None, text=full, start=0)]
                 if _is_index_file(doc_name)
                 else split_by_structure(full))
+    sections = _merge_heading_only_forward(sections)
     sections = apply_size_guardrails(
         sections, settings.chunk_target_max, settings.chunk_target_min
     )
