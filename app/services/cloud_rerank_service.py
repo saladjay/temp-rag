@@ -42,6 +42,7 @@ class CloudRerankService:
             headers["Authorization"] = f"Basic {self.auth_token}"
 
         self._client = httpx.Client(timeout=self.timeout, headers=headers, trust_env=False)
+        self.last_usage = None   # 最近一次调用的 token 用量
 
     def rerank(
         self,
@@ -64,6 +65,7 @@ class CloudRerankService:
             ValueError: 响应格式错误
         """
         response = self._post_rerank_request(query, documents)
+        self.last_usage = response.get("usage")
         results = self._parse_rerank_response(response, documents)
 
         if top_k is not None:

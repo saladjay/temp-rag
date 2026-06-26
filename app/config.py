@@ -105,7 +105,7 @@ class Settings(BaseSettings):
     milvus_db: str = "default"
     milvus_collection_prefix: str = "kb_"
     milvus_metric: str = "COSINE"
-    milvus_top_k_per_kb: int = 10
+    milvus_top_k_per_kb: int = 5     # 每库召回条数；×6库=30 候选进重排（原10=60，减半以提速重排）
     milvus_ef: int = 128
     milvus_hnsw_m: int = 16
     milvus_ef_construction: int = 200

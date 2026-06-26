@@ -16,5 +16,6 @@ class ChatState(TypedDict, total=False):
     cache_key: str
     cache_hit: bool
     error: Optional[str]
-    retrieve_trace: Optional[dict]   # 检索耗时+IO: {query, kbs, embed_ms, search_ms, total_ms, n_hits, top3}
-    rerank_trace: Optional[dict]     # 重排耗时+IO: {query, n_in, ms, fallback, top}
+    retrieve_trace: Optional[dict]   # 检索耗时+IO: {query, kbs, embed_ms, search_ms, total_ms, n_hits, embed_usage, top3}
+    rerank_trace: Optional[dict]     # 重排耗时+IO: {query, n_in, ms, usage, fallback, top}
+    generate_trace: Optional[dict]   # 生成耗时+token: {model, gen_ms, usage{prompt/completion/total}, n_sources, context_chars}

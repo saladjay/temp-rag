@@ -153,6 +153,7 @@ def retrieve_node(state: ChatState, embedder=None, store=None) -> dict:
         "query": q, "kbs": list(kbs),
         "embed_ms": round(t_embed * 1000), "search_ms": round(t_search * 1000),
         "total_ms": round((t_embed + t_search) * 1000), "n_hits": len(hits),
+        "embed_usage": getattr(embedder, "last_usage", None),
         "top3": [{"doc_name": h.doc_name, "score": round(float(h.score), 4), "source": h.source}
                  for h in hits[:3]],
     }
@@ -184,7 +185,7 @@ def rerank_node(state: ChatState, reranker=None, top_n: Optional[int] = None) ->
         # 降级：用检索原分排序（同确定二级键）
         ordered = sorted(retrieved, key=lambda r: (-r.get("score", 0), r["doc_id"], r["segment_id"]))
         sources = ordered[:top_n]
-        trace = {"query": q, "n_in": len(docs), "ms": round(t_rerank * 1000), "fallback": True,
+        trace = {"query": q, "n_in": len(docs), "ms": round(t_rerank * 1000), "usage": getattr(reranker, "last_usage", None), "fallback": True,
                  "error": str(e)[:60],
                  "top": [{"doc_name": s["doc_name"], "score": round(float(s.get("score", 0)), 4),
                           "source": s["source"]} for s in sources]}
@@ -198,7 +199,7 @@ def rerank_node(state: ChatState, reranker=None, top_n: Optional[int] = None) ->
         pairs.append((r["score"], src["doc_id"], src["segment_id"], src))
     pairs.sort(key=lambda x: (-x[0], x[1], x[2]))
     sources = [p[3] for p in pairs[:top_n]]
-    trace = {"query": q, "n_in": len(docs), "ms": round(t_rerank * 1000), "fallback": False,
+    trace = {"query": q, "n_in": len(docs), "ms": round(t_rerank * 1000), "usage": getattr(reranker, "last_usage", None), "fallback": False,
              "top": [{"doc_name": p[3]["doc_name"], "score": round(float(p[0]), 4),
                       "source": p[3]["source"]} for p in pairs[:top_n]]}
     return {"sources": sources, "rerank_trace": trace}
@@ -241,8 +242,10 @@ async def generate_node(
                          [(s["doc_id"], s["segment_id"]) for s in sources], model)
     cached = await cache.get(key)
     if cached is not None:
-        return {"answer": cached, "cache_key": key, "cache_hit": True, "context_text": ""}
+        return {"answer": cached, "cache_key": key, "cache_hit": True, "context_text": "",
+                "generate_trace": {"model": model, "cache_hit": True, "gen_ms": 0, "usage": None, "n_sources": len(sources)}}
     # 未命中 → 生成（非流式；token 级流式见 Task 9）
+    import time
     llm = llm or _default_llm()
     context = build_context_text(sources)
     sys = GENERATE_SYSTEM
@@ -250,16 +253,22 @@ async def generate_node(
     # deepseek_v4 端点要求 messages 体
     messages = [{"role": "system", "content": sys + "\n\n本次检索返回的知识库内容：\n" + context}] + history + \
                [{"role": "user", "content": state["rewritten_query"]}]
+    t0 = time.perf_counter()
     try:
         resp = llm.chat(messages, temperature=settings.gen_temperature,
                         top_p=settings.gen_top_p, max_tokens=settings.gen_max_tokens)
         answer = resp.get("text") or ""
+        usage = resp.get("usage")
     except Exception as e:
         logger.exception("generate_failed")
-        return {"answer": "", "cache_key": key, "cache_hit": False,
-                "context_text": context, "error": str(e)}
+        return {"answer": "", "cache_key": key, "cache_hit": False, "context_text": context, "error": str(e),
+                "generate_trace": {"model": model, "cache_hit": False, "gen_ms": round((time.perf_counter()-t0)*1000),
+                                   "usage": None, "n_sources": len(sources), "context_chars": len(context), "error": str(e)[:60]}}
+    gen_ms = round((time.perf_counter() - t0) * 1000)
     await cache.set(key, answer)
-    return {"answer": answer, "cache_key": key, "cache_hit": False, "context_text": context}
+    return {"answer": answer, "cache_key": key, "cache_hit": False, "context_text": context,
+            "generate_trace": {"model": model, "cache_hit": False, "gen_ms": gen_ms, "usage": usage,
+                               "n_sources": len(sources), "context_chars": len(context)}}
 
 
 # ---------- load_history ----------

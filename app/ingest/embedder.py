@@ -8,6 +8,7 @@ class CloudEmbedder:
     def __init__(self, service=None):
         self._svc = service
         self._dim = None
+        self.last_usage = None
 
     def _svc_(self):
         if self._svc is None:
@@ -22,4 +23,7 @@ class CloudEmbedder:
         return self._dim
 
     def embed(self, texts: Sequence[str]) -> np.ndarray:
-        return self._svc_().encode(list(texts))
+        svc = self._svc_()
+        vecs = svc.encode(list(texts))
+        self.last_usage = getattr(svc, "last_usage", None)
+        return vecs

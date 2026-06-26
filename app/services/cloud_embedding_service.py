@@ -36,6 +36,7 @@ class CloudEmbeddingService:
             headers["Authorization"] = f"Basic {self.auth_token}"
 
         self._client = httpx.Client(timeout=self.timeout, headers=headers, trust_env=False)
+        self.last_usage = None   # 最近一次调用的 token 用量
 
     def encode(self, texts: str | List[str]) -> np.ndarray:
         """将文本编码为向量
@@ -54,6 +55,7 @@ class CloudEmbeddingService:
             texts = [texts]
 
         response = self._post_embedding_request(texts)
+        self.last_usage = response.get("usage")
         return self._parse_embedding_response(response)
 
     def _post_embedding_request(self, texts: List[str]) -> dict:
