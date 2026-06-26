@@ -65,6 +65,9 @@ def clean_span(text: str) -> str:
     """剥离版式噪声：img 标签（URL）、<图片内容> 包装标记、开头注入元表、归一化空行。
     注意：只剥 <图片内容|start>/<图片内容|end> 标记本身，保留中间的 OCR 文字
     （图片里的发文机关/印章等正文）。"""
+    # Word 目录(TOC)噪声：含 _Toc 书签的整行是正文标题的重复，无检索价值，删整行
+    if "_Toc" in text:
+        text = "\n".join(ln for ln in text.splitlines() if "_Toc" not in ln)
     text = _IMG_TAG_RE.sub("", text)
     text = text.replace("<图片内容|start>", "").replace("<图片内容|end>", "")
     text = _strip_leading_meta_table(text)

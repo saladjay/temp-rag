@@ -1,5 +1,5 @@
 from app.config import settings
-from app.ingest.chunker import Chunk, assign_segment_id
+from app.ingest.chunker import Chunk, assign_segment_id, clean_span
 
 
 def test_config_chunker_defaults():
@@ -309,3 +309,32 @@ def test_chunk_document_index_file_not_fragmented_by_headings():
     from app.config import settings
     assert all(len(c.text) <= settings.chunk_target_max for c in chunks)
     assert "条目内容行" in "".join(c.text for c in chunks)
+
+
+def test_clean_span_strips_word_toc_lines():
+    # Word 导出的目录：每行带 _Toc 书签 + HYPERLINK/PAGEREF，是正文标题的重复，无检索价值
+    text = (
+        'TOC \\o "1-2" \\h \\u HYPERLINK \\l _Toc1655919882 一、发展现状 PAGEREF _Toc1655919882 - 1 -\n'
+        ' HYPERLINK \\l _Toc1853061321 二、发展思路 PAGEREF _Toc1853061321 - 2 -\n'
+        '一、发展现状与形势\n实际正文内容，讲发展情况。'
+    )
+    out = clean_span(text)
+    assert "_Toc" not in out
+    assert "HYPERLINK" not in out
+    assert "一、发展现状与形势" in out   # 真实标题保留
+    assert "实际正文内容" in out
+
+
+def test_chunk_document_no_toc_fragment():
+    # 含 Word 目录的政策文档：不应产出目录碎片 chunk，真实章节正文保留
+    body = "一、发展现状与形势\n" + "当前交通运输发展态势良好。" * 40
+    raw = (
+        '<!-- chunk_idx=0 chunk_id=toc -->\n'
+        'TOC \\o "1-2" \\h \\u HYPERLINK \\l _Toc1 一、发展现状 PAGEREF _Toc1 - 1 -\n'
+        '<!-- chunk_idx=1 chunk_id=body -->\n' + body
+    )
+    chunks = chunk_document("docT", "十四五规划.doc", "kb_policy_national", raw)
+    joined = "".join(c.text for c in chunks)
+    assert "_Toc" not in joined and "HYPERLINK" not in joined   # 目录噪声被剥
+    assert "发展现状与形势" in joined                            # 真实章节保留
+    assert "当前交通运输发展态势良好" in joined
